@@ -1,0 +1,26 @@
+* {
+	cursor: url(../img/mouse.ico), auto;
+}
+a:hover{
+	cursor: pointer;
+}
+
+/* @media only screen and (max-width:575px ) {
+				
+			}
+			@media only screen and (min-width:576px ) {
+				
+			}
+			
+			@media only screen and (min-width:768px ) {
+				
+				
+			}
+			
+			@media only screen and (min-width:992px ) {
+				
+			}
+			
+			@media only screen and (min-width:1200px ) {
+				
+			} */

@@ -1,0 +1,77 @@
+.navbar .nav-item .nav-link {
+	font-weight: normal;
+	text-transform: uppercase;
+}
+
+.navbar .nav-item .nav-link.active {
+	color: tomato;
+}
+
+.navbar-brand {
+	max-width: 130px;
+}
+
+.navbar-brand img {
+	max-width: 100%;
+	height: auto;
+}
+
+.navbar-toggler {
+	border: 0;
+	padding: 0;
+	display: flex;
+	align-items: center;
+	height: 30px;
+}
+
+.navbar-toggler .navbar-toggler-icon {
+	border-image: none;
+	width: 30px;
+	height: 3px;
+	background-color: transparent;
+	position: relative;
+	display: flex;
+	border-radius: 2px;
+}
+
+.navbar-toggler .navbar-toggler-icon::before,
+.navbar-toggler .navbar-toggler-icon::after {
+	content: "";
+	width: 30px;
+	height: inherit;
+	display: block;
+	background-color: #fff;
+	position: absolute;
+	left: 0;
+	top: 0;
+	border-radius: 2px;
+	transition: transform 0.2s ease;
+}
+
+.navbar-toggler .navbar-toggler-icon::before {
+	margin-top: -8px;
+}
+
+.navbar-toggler .navbar-toggler-icon::after {
+	margin-top: 8px;
+}
+
+.navbar-toggler:not(.collapsed) .navbar-toggler-icon::before {
+	transform-origin: 5px 5px;
+	transform: rotate(45deg);
+}
+
+.navbar-toggler:not(.collapsed) .navbar-toggler-icon::after {
+	transform-origin: 5px -2px;
+	transform: rotate(-45deg);
+}
+
+.navbar-toggler.collapsed .navbar-toggler-icon {
+	background-color: #fff;
+}
+
+.navbar-toggler.collapsed .navbar-toggler-icon::before,
+.navbar-toggler.collapsed .navbar-toggler-icon::after {
+	transform-origin: 0;
+	transition: transform 0.2s ease;
+}
