@@ -1,14 +1,60 @@
+* {
+    font-size: 30px;
+    font-family: "Noto Sans", serif;
+}
+
 body {
-	padding-top: 100px;
-}
-section h1{
-	text-align: center;
-	color: red;
-	font-size: 5em;
+    padding-top: 100px;
+    overflow-x: hidden;
 }
 
+a,
+a:hover {
+    display: block;
+    width: inherit;
+    height: inherit;
+    appearance: none;
+    color: inherit;
+}
 
+main {
+    width: 100vw;
+    min-height: 80vh;
+	background: url(../img/bg.png) repeat;
+}
 
+main > ul {
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    list-style: none;
+}
 
+main > ul > li {
+    user-select: none;
+    padding: 1em 0;
+    font-weight: bolder;
+    font-size: 1.1em;
+    transition: 0.25s ease-in-out;
+}
 
+main > ul > li:hover {
+    color: white;
+    font-size: 1.5em;
+}
 
+.spanLine {
+    display: block;
+    margin: 0 auto;
+    width: 5em;
+    height: 2px;
+    background-color: white;
+}
+
+/*footer*/
+footer {
+    background-color: rgb(52, 58, 64);
+    width: 100vw;
+    min-height: 10vh;
+}
