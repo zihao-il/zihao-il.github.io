@@ -10,6 +10,86 @@
 		<link rel="stylesheet" type="text/css" href="css/index.css" />
 		<link rel="stylesheet" type="text/css" href="css/head.css"/>
 		<link rel="stylesheet" type="text/css" href="css/foot.css"/>
+		<style>
+			.one-pan-tip {
+		    cursor: pointer;
+		}
+		
+		.one-pan-tip::before {
+		    background-position: center;
+		    background-size: 100% 100%;
+		    background-repeat: no-repeat;
+		    box-sizing: border-box;
+		    width: 1em;
+		    height: 1em;
+		    margin: 0 1px .15em 1px;
+		    vertical-align: middle;
+		    display: inline-block;
+		}
+		
+		.one-pan-tip-success::before {
+		    content: '';
+			background-image: url(img/bg.png);
+		}
+		
+		.one-pan-tip-error {
+		    text-decoration: line-through;
+		}
+		
+		.one-pan-tip-error::before {
+		    content: '';
+			background-image: url(img/bg.png);
+		}
+		
+		.one-pan-tip-other::before {
+		    content: '';
+			background-image: url(img/bg.png);
+		}
+		
+		.one-pan-tip-lock::before {
+		    content: '';
+			background-image: url(img/bg.png);
+		}</style>
+		<meta name="ljjc::status" content="on">
+		<style>.one-pan-tip {
+		    cursor: pointer;
+		}
+		
+		.one-pan-tip::before {
+		    background-position: center;
+		    background-size: 100% 100%;
+		    background-repeat: no-repeat;
+		    box-sizing: border-box;
+		    width: 1em;
+		    height: 1em;
+		    margin: 0 1px .15em 1px;
+		    vertical-align: middle;
+		    display: inline-block;
+		}
+		
+		.one-pan-tip-success::before {
+		    content: '';
+			background-image: url(img/bg.png);
+		}
+		
+		.one-pan-tip-error {
+		    text-decoration: line-through;
+		}
+		
+		.one-pan-tip-error::before {
+		    content: '';
+			background-image: url(img/bg.png);
+		}
+		
+		.one-pan-tip-other::before {
+		    content: '';
+			background-image: url(img/bg.png);
+		}
+		
+		.one-pan-tip-lock::before {
+		    content: '';
+			background-image: url(img/bg.png);
+		}</style>
 	</head>
 	<body>
 		<header>
@@ -28,23 +108,31 @@
 								<a class="nav-link" href="index.html">111<span class="sr-only">(current)</span></a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link" href="index.html">222</a>
+								<a class="nav-link" href="index2.html">222</a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link" href="index.html">333</a>
+								<a class="nav-link" href="index3.html">333</a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link" href="index.html">444</a>
+								<a class="nav-link" href="index4.html">444</a>
 							</li>
 						</ul>
 					</div>
 				</div>
 			</nav>
 		</header>
-
-		<section>
-			<h1>Hello World</h1>
-		</section>
+		
+		<main>
+		    <ul>
+		        <li><a href="#" title="添加悬浮提示">title</a></li>
+		        <li><a href="#" title="添加悬浮提示">title</a></li>
+		        <li><a href="#" title="添加悬浮提示">title</a></li>
+		        <li><a href="#" title="添加悬浮提示">title</a></li>
+		    </ul>
+		</main>
+		<footer>
+		    添加内容
+		</footer>
 			<!-- <footer class="d-flex justify-content-around px-md-4 py-2 bg-dark">
 			        <ul class="pt-2 list-unstyled">
 			          <li><span>CopyRight &copy;2021 <a href="index.html">text</a>
@@ -53,5 +141,7 @@
 			</footer> -->
 		<script src="bootstrap/js/jquery-3.6.0.min.js" type="text/javascript" charset="utf-8"></script>
 		<script src="bootstrap/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
 	</body>
+
 </html>
