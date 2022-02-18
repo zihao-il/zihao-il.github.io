@@ -9,7 +9,8 @@
 		<title>MC市场资源包链接收藏合集</title>
 		<style type="text/css">
 			body {
-				background-color: #ecf0f1
+				background-color: #ecf0f1;
+				height: 100vh;
 			}
 
 			.outline {
@@ -75,6 +76,19 @@
 					margin-left: 0px
 				}
 			}
+
+			.text {
+				position: absolute;
+				z-index: 9999999;
+				font-weight: bold;
+				user-select: none;
+			}
+
+			@keyframes remove {
+				100% {
+					opacity: 0;
+				}
+			}
 		</style>
 	</head>
 	<body>
@@ -104,5 +118,6 @@
 		<script src="bootstrap/js/jquery-3.6.0.min.js" type="text/javascript" charset="utf-8"></script>
 		<script src="bootstrap/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/index2.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/cursor.js" type="text/javascript" charset="utf-8"></script>
 	</body>
 </html>
