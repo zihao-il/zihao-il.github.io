@@ -1,10 +1,12 @@
-* {
-	cursor: url(../img/mouse.ico), auto;
+body{
+	/* cursor: url(../img/diamond_sword.ico), auto; */
 }
-a:hover{
-	cursor: pointer;
+a:hover,summary:hover{
+	/* cursor: url(../img/diamond_pickaxe.ico), auto !important; */
 }
 
+
+/*  */
 /* @media only screen and (max-width:575px ) {
 				
 			}
