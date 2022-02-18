@@ -1,5 +1,5 @@
 // var url="";
-window.onload = function detectOS() {
+window.onload = function() {
 	if ((navigator.userAgent.match(
 			/(iPhone|iPod|Android|ios|iOS|iPad|Backerry|WebOS|Symbian|Windows Phone|Phone)/i))) {
 		url =
@@ -9,6 +9,19 @@ window.onload = function detectOS() {
 		url = "minecraft://openStore/?showStoreOffer=";
 		// alert(url);
 	}
+	
+	var imgsword = ["url(img/diamond_sword.ico), auto", "url(img/netherite_sword.ico), auto"];
+	var imgpickaxe = ["url(img/diamond_pickaxe.ico), auto", "url(img/netherite_pickaxe.ico), auto"];
+	randomsword = Math.floor((Math.random() * imgsword.length));
+	randompickaxe = Math.floor((Math.random() * imgpickaxe.length));
+	$("body").css("cursor",imgsword[randomsword]);
+	$('a,summary').hover(
+	    function() {
+	         this.style.cursor =imgpickaxe[randompickaxe];
+	    }
+	);
+	
+
 }
 const myskin = [
 	"8e78a44d-0c1f-4ce2-826b-8bbc555012de",		//一周内生日皮肤包
