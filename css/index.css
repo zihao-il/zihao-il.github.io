@@ -20,7 +20,7 @@ a:hover {
 main {
     width: 100vw;
     min-height: 80vh;
-	background: url(../img/bg.png) repeat;
+	background: url(../img/bgdark.png) repeat;
 }
 
 main > ul {
