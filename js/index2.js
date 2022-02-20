@@ -1,13 +1,14 @@
 // var url="";
+url = "www.baidu.com";
 window.onload = function() {
 	if ((navigator.userAgent.match(
 			/(iPhone|iPod|Android|ios|iOS|iPad|Backerry|WebOS|Symbian|Windows Phone|Phone)/i))) {
 		url =
 			"https://minecraft.onelink.me/1010960778?pid=minecraftnet&is_retargeting=true&af_dp=minecraft://openStore/?showStoreOffer=";
-		// alert(url);
+		// console.log(url);
 	} else {
 		url = "minecraft://openStore/?showStoreOffer=";
-		// alert(url);
+		// console.log(url);
 	}
 
 	var imgsword = [
@@ -51,15 +52,12 @@ const myskin = [
 ]
 
 
-
-function urljump() {
-	var list = $(".btn")
-	for (let i = 0; i < list.length; i++) {
-		list[i].onclick = function() {
-			// console.log(i)
-			var juurl = url + myskin[i];
-			// console.log(juurl);
-			location.href = juurl;
-		}
+var urljump = $(".btn")
+for (let i = 0; i < urljump.length; i++) {
+	urljump[i].onclick = function() {
+		// console.log(i)
+		var juurl = url + myskin[i];
+		// console.log(juurl);
+		this.href = juurl;
 	}
 }
