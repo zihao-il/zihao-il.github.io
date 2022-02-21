@@ -30,6 +30,10 @@
 				color: #5cb85c;
 			}
 
+			.btn-secondary.outline {
+				color: #6c757d;
+			}
+
 			.btn-info.outline {
 				color: #5bc0de;
 			}
@@ -42,8 +46,10 @@
 				color: #d9534f;
 			}
 
+
 			.btn-primary.outline:hover,
 			.btn-success.outline:hover,
+			.btn-secondary.outline:hover,
 			.btn-info.outline:hover,
 			.btn-warning.outline:hover,
 			.btn-danger.outline:hover {
@@ -122,6 +128,91 @@
 					color: black;
 				}
 			}
+
+			@media only screen and (max-width:575px) {
+
+				p,
+				summary {
+					font-size: 1rem;
+				}
+
+				h1 {
+					font-size: 2.5rem;
+				}
+
+				.btn {
+					font-size: 1rem;
+					line-height: 1.5;
+				}
+			}
+
+			@media only screen and (min-width:576px) {
+
+				p,
+				summary {
+					font-size: 1.05rem;
+				}
+
+				h1 {
+					font-size: 2.55rem;
+				}
+
+				.btn {
+					font-size: 1rem;
+					line-height: 2;
+				}
+			}
+
+			@media only screen and (min-width:768px) {
+
+				p,
+				summary {
+					font-size: 1.2rem;
+				}
+
+				h1 {
+					font-size: 2.85rem;
+				}
+
+				.btn {
+					font-size: 1.1rem;
+					line-height: 2;
+				}
+			}
+
+			@media only screen and (min-width:992px) {
+
+				p,
+				summary {
+					font-size: 1.25rem;
+				}
+
+				h1 {
+					font-size: 3.5rem;
+				}
+
+				.btn {
+					font-size: 1.2rem;
+					line-height: 2;
+				}
+			}
+
+			@media only screen and (min-width:1200px) {
+
+				p,
+				summary {
+					font-size: 1.25rem;
+				}
+
+				h1 {
+					font-size: 3.85rem;
+				}
+
+				.btn {
+					font-size: 1.25rem;
+					line-height: 2;
+				}
+			}
 		</style>
 	</head>
 	<body>
@@ -137,14 +228,14 @@
 				<br>
 				<a class="btn btn-primary outline">一周内生日皮肤包</a>
 				<a class="btn btn-success outline">二周内生日皮肤包</a>
-				<a class="btn btn-info outline">三周内生日皮肤包</a>
-				<a class="btn btn-warning outline">四周内生日皮肤包</a>
-				<a class="btn btn-danger outline">五周内生日皮肤包</a>
-				<a class="btn btn-primary outline">Minecon 2015 皮肤包</a>
-				<a class="btn btn-success outline">Minecon 2016 皮肤包</a>
-				<a class="btn btn-info outline">Minecon Earth 2017 皮肤包</a>
-				<a class="btn btn-warning outline">Founder's Cape</a>
-				<a class="btn btn-danger outline">地球皮肤</a>
+				<a class="btn btn-secondary outline">三周内生日皮肤包</a>
+				<a class="btn btn-info outline">四周内生日皮肤包</a>
+				<a class="btn btn-warning outline">五周内生日皮肤包</a>
+				<a class="btn btn-danger outline">Minecon 2015 皮肤包</a>
+				<a class="btn btn-primary outline">Minecon 2016 皮肤包</a>
+				<a class="btn btn-success outline">Minecon Earth 2017 皮肤包</a>
+				<a class="btn btn-secondary outline">Founder's Cape</a>
+				<a class="btn btn-info outline">地球皮肤</a>
 				<div class="clearfix"></div>
 			</details>
 
