@@ -1,5 +1,5 @@
 // var url="";
-url = "www.baidu.com";
+
 window.onload = function() {
 	if ((navigator.userAgent.match(
 			/(iPhone|iPod|Android|ios|iOS|iPad|Backerry|WebOS|Symbian|Windows Phone|Phone)/i))) {
@@ -12,20 +12,20 @@ window.onload = function() {
 	}
 
 	var imgsword = [
-		"url(img/wood_sword.ico), auto",
-		"url(img/stone_sword.ico), auto",
-		"url(img/iron_sword.ico), auto",
-		"url(img/gold_sword.ico), auto",
-		"url(img/diamond_sword.ico), auto",
-		"url(img/netherite_sword.ico), auto"
+		"url(img/cursor/wood_sword.ico), auto",
+		"url(img/cursor/stone_sword.ico), auto",
+		"url(img/cursor/iron_sword.ico), auto",
+		"url(img/cursor/gold_sword.ico), auto",
+		"url(img/cursor/diamond_sword.ico), auto",
+		"url(img/cursor/netherite_sword.ico), auto"
 	];
 	var imgpickaxe = [
-		"url(img/wood_pickaxe.ico), auto",
-		"url(img/stone_pickaxe.ico), auto",
-		"url(img/iron_pickaxe.ico), auto",
-		"url(img/gold_pickaxe.ico), auto",
-		"url(img/diamond_pickaxe.ico), auto",
-		"url(img/netherite_pickaxe.ico), auto"
+		"url(img/cursor/wood_pickaxe.ico), auto",
+		"url(img/cursor/stone_pickaxe.ico), auto",
+		"url(img/cursor/iron_pickaxe.ico), auto",
+		"url(img/cursor/gold_pickaxe.ico), auto",
+		"url(img/cursor/diamond_pickaxe.ico), auto",
+		"url(img/cursor/netherite_pickaxe.ico), auto"
 	];
 	randomsword = Math.floor((Math.random() * imgsword.length));
 	randompickaxe = Math.floor((Math.random() * imgpickaxe.length));
@@ -38,6 +38,8 @@ window.onload = function() {
 
 
 }
+
+
 const myskin = [
 	"8e78a44d-0c1f-4ce2-826b-8bbc555012de", //一周内生日皮肤包
 	"02b54955-9b4d-40cb-9b73-360d23cf1b9e", //二周内生日皮肤包
