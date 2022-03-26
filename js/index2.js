@@ -53,10 +53,16 @@ const myskin = [
 	"0c77040a-abb6-4938-963d-5a8e9872c85c" //地球皮肤
 ]
 
+function OnclickSound(){
+    var OnclickAudio = new Audio("audio/OnclickSound.mp3");
+    OnclickAudio.play();
+
+};
 
 var urljump = $(".btn")
 for (let i = 0; i < urljump.length; i++) {
 	urljump[i].onclick = function() {
+		OnclickSound();		
 		// console.log(i)
 		var juurl = url + myskin[i];
 		// console.log(juurl);
