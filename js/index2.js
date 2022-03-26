@@ -54,7 +54,7 @@ const myskin = [
 ]
 
 function OnclickSound(){
-    var OnclickAudio = new Audio("audio/OnclickSound.mp3");
+    var OnclickAudio = new Audio("audio/OnclickSound.ogg");
     OnclickAudio.play();
 
 };
