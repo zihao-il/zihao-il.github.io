@@ -49,6 +49,7 @@ const myskin = [
 	"7dae6bfe-e92b-403e-842e-d8d75e329644", //Minecon2015皮肤包
 	"20b4d681-df67-420c-aff3-07673bb44d07", //Minecon2016皮肤包
 	"d0f9abcb-4915-4008-9837-ff7946f4a115", //MineconEarth2017皮肤包
+	"b89ef5de-78ad-4a48-b8a5-f12065286e7d", //旧版皮肤包
 	"b3b50166-5612-4ff1-8f03-9af0b01cb4da", //Founders披风包
 	"0c77040a-abb6-4938-963d-5a8e9872c85c" //地球皮肤
 ]
