@@ -51,7 +51,8 @@ const myskin = [
 	"d0f9abcb-4915-4008-9837-ff7946f4a115", //MineconEarth2017皮肤包
 	"b89ef5de-78ad-4a48-b8a5-f12065286e7d", //旧版皮肤包
 	"b3b50166-5612-4ff1-8f03-9af0b01cb4da", //Founders披风包
-	"0c77040a-abb6-4938-963d-5a8e9872c85c" //地球皮肤
+	"0c77040a-abb6-4938-963d-5a8e9872c85c", //地球皮肤
+	"530f1451-92dd-4924-9265-a96f536271ad"  //音乐
 ]
 
 function OnclickSound(){
@@ -70,3 +71,5 @@ for (let i = 0; i < urljump.length; i++) {
 		this.href = juurl;
 	}
 }
+
+
