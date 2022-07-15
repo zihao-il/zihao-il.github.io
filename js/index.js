@@ -1,10 +1,9 @@
-const linkUi = [].slice.apply(document.querySelectorAll("main > ul >li"));
+$(document).ready(function() {
+	$(".nav-item").click(function() {
+		var myCollapse = document.getElementById('site-menu')
+		var bsCollapse = new bootstrap.Collapse(myCollapse, {
+			hide: true
+		});
+	});
 
-linkUi.shift();
-
-linkUi.forEach((li)=>{
-    const span = document.createElement("span");
-    span.classList.add("spanLine");
-
-    li.parentElement.insertBefore(span,li);
 });
