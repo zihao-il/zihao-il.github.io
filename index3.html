@@ -186,7 +186,7 @@
             transition: 0.2s;
         }
 
-        .project-boxes {
+       .project-boxes {
             margin: 0 -8px;
             overflow-y: auto;
         }
@@ -419,146 +419,188 @@
 			height: 100%;
 			margin: auto 0;
 		}
-
-
-        @media screen and (max-width: 980px) {
-			.app-content {
-			    padding: 16px 12px 24px 12px;
+		@media screen and (max-width:575px) {
+		    .projects-section {
+		        overflow: auto;
 				
-			}
-            .project-boxes.jsGridView .project-box-wrapper {
-                width: 50%;
-            }
-
-            .status-number, .status-type {
-                font-size: 1.2em;
-            }
-
-            .status-type:after {
-                width: 4px;
-                height: 4px;
-            }
-
-            .item-status {
-                margin-right: 0;
-            }
-        }
-
-        @media screen and (max-width: 880px) {
-			.app-content {
-			    padding: 16px 12px 24px 12px;
-				
-			}
-        }
-
-        @media screen and (max-width: 720px) {
-			.app-content {
-			    padding: 16px 12px 24px 12px;
-				
-			}
-            .profile-btn span {
-                display: none;
-            }
-
-            .add-btn svg, .notification-btn svg, .mode-switch svg {
-                width: 16px;
-                height: 16px;
-            }
-
-            .app-header-right button {
-                margin-left: 4px;
-            }
-        }
-
-        @media screen and (max-width: 520px) {
-            .projects-section {
-                overflow: auto;
-				
-            }
-
-            .project-boxes {
-                overflow-y: visible;
-            }
-
-
-            .app-content {
-                padding: 16px 12px 24px 12px;
-				
-            }
+		    }
 		
-            .status-number, .status-type {
+		    .project-boxes {
+		        overflow-y: visible;
+		    }
+		
+		
+		    .app-content {
+		        padding: 16px 12px 24px 12px;
+				
+		    }
+		
+		    .status-number, .status-type {
 				font-size: 1em;
-            }
-
-
-            .project-boxes.jsGridView .project-box-wrapper {
-                width: 100%;
-            }
-
-            .projects-section {
-                padding: 24px 16px 0 16px;
-            }
-
-            .profile-btn img {
-                width: 24px;
-                height: 24px;
-            }
-
-
-            .projects-section-header p,
-            .projects-section-header .time {
-                font-size: 18px;
-            }
-
-            .status-type {
-                padding-right: 4px;
-            }
-
-            .status-type:after {
-                display: none;
-            }
-
-
-            .box-content-header {
-                font-size: 12px;
-                line-height: 16px;
-            }
-
-            .box-content-subheader {
-                font-size: 12px;
-                line-height: 16px;
-            }
-
-            .project-boxes.jsListView .project-box-header > span {
-                font-size: 10px;
-            }
-
-            .box-progress-header {
-                font-size: 12px;
-            }
-
-            .box-progress-percentage {
-                font-size: 10px;
-            }
-
-            .urlbtn {
-                font-size: 0.8em;
+		    }
+		
+		
+		    .project-boxes.jsGridView .project-box-wrapper {
+		        width: 100%;
+		    }
+		
+		    .projects-section {
+		        padding: 24px 16px 0 16px;
+		    }
+		
+		    .profile-btn img {
+		        width: 24px;
+		        height: 24px;
+		    }
+		
+		
+		    .projects-section-header p,
+		    .projects-section-header .time {
+		        font-size: 18px;
+		    }
+		
+		    .status-type {
+		        padding-right: 4px;
+		    }
+		
+		    .status-type:after {
+		        display: none;
+		    }
+		
+		
+		    .box-content-header {
+		        font-size: 12px;
+		        line-height: 16px;
+		    }
+		
+		    .box-content-subheader {
+		        font-size: 12px;
+		        line-height: 16px;
+		    }
+		
+		    .project-boxes.jsListView .project-box-header > span {
+		        font-size: 10px;
+		    }
+		
+		    .box-progress-header {
+		        font-size: 12px;
+		    }
+		
+		    .box-progress-percentage {
+		        font-size: 10px;
+		    }
+		
+		    .urlbtn {
+		        font-size: 0.8em;
 				display:flex;
 				flex-direction:column;
 				justify-content:center;
-                text-align: center;
+		        text-align: center;
 				margin: auto 0;
-            }
+		    }
+		
+		
+		    .project-boxes.jsListView .project-box > * {
+		        margin-right: 10px;
+		    }
+		
+		    .project-boxes.jsListView .more-wrapper {
+		        right: 2px;
+		        top: 10px;
+		    }
+			
+		}
+		@media screen and (min-width:576px) {
+			.app-content {
+			    padding: 16px 12px 24px 12px;
+				
+			}
+		    .project-boxes.jsGridView .project-box-wrapper {
+		        width: 50%;
+		    }
+		
+		    .status-number, .status-type {
+		        font-size: 1.2em;
+		    }
+		
+		    .status-type:after {
+		        width: 4px;
+		        height: 4px;
+		    }
+		
+		    .item-status {
+		        margin-right: 0;
+		    }
+		}
+		@media screen and (min-width:768px) {
+			.app-content {
+				padding: 16px 12px 24px 12px;
+				
+			}
+		 }
+		@media screen and (min-width:992px) {
+				.app-content {
+					padding: 16px 12px 24px 12px;
+					
+				}
+		      .profile-btn span {
+		          display: none;
+		      }
+		
+		      .add-btn svg, .notification-btn svg, .mode-switch svg {
+		          width: 16px;
+		          height: 16px;
+		      }
+		
+		      .app-header-right button {
+		          margin-left: 4px;
+		      }
+			
+			.box-content-header,.box-content-subheader{
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+			.project-boxes.jsGridView .project-box-wrapper {
+			    width: 33.3%;
+			}
+					
+		  }
 
-            .project-boxes.jsListView .project-box > * {
-                margin-right: 10px;
-            }
-
-            .project-boxes.jsListView .more-wrapper {
-                right: 2px;
-                top: 10px;
-            }
+        @media (prefers-color-scheme: light) {
+        	
         }
+        
+        @media (prefers-color-scheme: dark) {
+			.app-content{
+				background: #343a40;
+			}
+        	.projects-section{
+				background: #1f1c2e;
+			}
+			.projects-section-header p{
+				color: #fff;
+			}
+			.projects-status .item-status span{
+				color: #fff;
+			}
+			.project-box-header span{
+				color: #838383;
+			}
+			.project-box-content-header *{
+				color: #8f8f8f;
+			}
+			.box-progress-percentage,.box-progress-header{
+				color: #838383;
+			}
+			
+        }
+
+       
+
+     
+
+        
     </style>
 </head>
 <body>
