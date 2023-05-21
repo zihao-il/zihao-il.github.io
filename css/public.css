@@ -1,0 +1,32 @@
+a {
+    text-decoration: none;
+}
+
+body {
+    /* background-color: #ecf0f1; */
+    height: 100%;
+    background: url(../img/bglight.png) repeat center center;
+    background-size: cover;
+}
+
+a:hover, summary:hover {
+    /* cursor: url(../img/diamond_pickaxe.ico), auto !important; */
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background: url(../img/bgdark.png) repeat center center;
+        background-size: cover;
+    }
+
+
+}
+
+@media (prefers-color-scheme: light) {
+    body {
+        background: url(../img/bglight.png) repeat center center;
+        background-size: cover;
+    }
+
+
+}

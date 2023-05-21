@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+          name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+    <script>LA.init({id: "JdyOz7mswFKtzOxX", ck: "JdyOz7mswFKtzOxX"})</script>
+    <title>版本库网址合集</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --app-container: #F3F6FD;
+            --main-color: #1F1C2E;
+            --secondary-color: #4A4A4A;
+            --projects-section: #FFFFFF;
+            --star: #1ff1c2e;
+        }
+
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            overflow: hidden;
+            justify-content: center;
+            background-color: var(--app-container);
+        }
+
+        button, a {
+            cursor: pointer;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 1800px;
+            height: 100%;
+            transition: 0.2s;
+            background-color: var(--app-container);
+        }
+
+        .app-content {
+            display: flex;
+            overflow: hidden;
+            height: 100%;
+            margin: 0 auto;
+            padding: 16px 24px 24px 0;
+        }
+
+        .app-header-right button {
+            margin-left: 10px;
+        }
+
+        .profile-btn img {
+            width: 32px;
+            height: 32px;
+            margin-right: 4px;
+            border-radius: 50%;
+            -o-object-fit: cover;
+            object-fit: cover;
+        }
+
+        .profile-btn span {
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 24px;
+            color: var(--main-color);
+        }
+
+
+        .projects-section {
+            display: flex;
+            overflow: hidden;
+            flex: 2;
+            flex-direction: column;
+            height: 100%;
+            margin: 0 auto;
+            padding: 32px 32px 0 32px;
+            border-radius: 32px;
+            background-color: var(--projects-section);
+        }
+
+        .projects-section-line {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 32px;
+        }
+
+        .projects-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            color: var(--main-color);
+        }
+
+        .projects-section-header p {
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 32px;
+            margin: 0;
+            opacity: 0.9;
+            color: var(--main-color);
+        }
+
+        .projects-section-header .time {
+            font-size: 20px;
+        }
+
+        .projects-status {
+            display: flex;
+        }
+
+        .item-status {
+            display: flex;
+            flex-direction: column;
+            margin-right: 16px;
+        }
+
+        .item-status:not(:last-child) .status-type:after {
+            position: absolute;
+            top: 50%;
+            right: 8px;
+            width: 6px;
+            height: 6px;
+            content: "";
+            transform: translatey(-50%);
+            border: 1px solid var(--secondary-color);
+            border-radius: 50%;
+        }
+
+        .status-number {
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 32px;
+            color: var(--main-color);
+        }
+
+        .status-type {
+            position: relative;
+            padding-right: 24px;
+            color: var(--secondary-color);
+        }
+
+
+        .messages-section .projects-section-header {
+            position: sticky;
+            z-index: 1;
+            top: 0;
+            padding: 32px 24px 0 24px;
+            background-color: var(--projects-section);
+        }
+
+
+        .star-checkbox input {
+            position: absolute;
+            width: 0;
+            height: 0;
+            opacity: 0;
+        }
+
+        .star-checkbox label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .dark .star-checkbox input:checked + label {
+            color: var(--star);
+        }
+
+        .star-checkbox input:checked + label svg {
+            transition: 0.2s;
+            fill: var(--star);
+        }
+
+        .project-boxes {
+            overflow-y: auto;
+            margin: 0 -8px;
+        }
+
+        .project-boxes.jsGridView {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .project-boxes.jsGridView .project-box-wrapper {
+            width: 33.3%;
+        }
+
+        .project-boxes.jsListView .project-box {
+            position: relative;
+            display: flex;
+            border-radius: 10px;
+        }
+
+        .project-boxes.jsListView .project-box > * {
+            margin-right: 24px;
+        }
+
+        .project-boxes.jsListView .more-wrapper {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+        }
+
+        .project-boxes.jsListView .project-box-content-header {
+            order: 1;
+            max-width: 120px;
+        }
+
+        .project-boxes.jsListView .project-box-header {
+            order: 2;
+        }
+
+        .project-boxes.jsListView .project-box-footer {
+            flex-direction: column;
+            justify-content: flex-start;
+            order: 3;
+            padding-top: 0;
+        }
+
+        .project-boxes.jsListView .project-box-footer:after {
+            display: none;
+        }
+
+        .project-boxes.jsListView .participants {
+            margin-bottom: 8px;
+        }
+
+        .project-boxes.jsListView .project-box-content-header p {
+            overflow: hidden;
+            text-align: left;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .project-boxes.jsListView .project-box-header > span {
+            font-size: 12px;
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+        }
+
+        .project-boxes {
+            flex: 1;
+            order: 3;
+        }
+
+        .project-box {
+            padding: 16px;
+            border-radius: 30px;
+            background-color: var(--main-color-card);
+            --main-color-card: #DBF6FD;
+        }
+
+        .project-box-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            color: var(--main-color);
+        }
+
+        .project-box-header span {
+            font-size: 14px;
+            line-height: 16px;
+            opacity: 0.7;
+            color: #4A4A4A;
+        }
+
+        .project-box-content-header {
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .project-box-content-header p {
+            font-size: 0.9em;
+            margin: 0.2em auto;
+        }
+
+        .project-box-wrapper {
+            padding: 8px;
+            transition: 0.2s;
+        }
+
+        .project-btn-more {
+            position: relative;
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            border: none;
+            background-color: transparent;
+
+        }
+
+        .more-wrapper {
+            position: relative;
+        }
+
+        .box-content-header {
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 24px;
+            opacity: 0.7;
+        }
+
+        .box-content-subheader {
+            font-size: 14px;
+            line-height: 24px;
+            opacity: 0.7;
+        }
+
+        .box-progress {
+            display: block;
+            height: 4px;
+            border-radius: 6px;
+        }
+
+        .box-progress-bar {
+            overflow: hidden;
+            width: 100%;
+            height: 4px;
+            margin: 8px 0;
+            border-radius: 6px;
+            background-color: #FFFFFF;
+        }
+
+        .box-progress-header {
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 16px;
+            margin: 0;
+        }
+
+        .box-progress-percentage {
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 16px;
+            margin: 0.325em auto;
+            text-align: right;
+        }
+
+        .project-box-footer {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            padding-top: 16px;
+        }
+
+        .project-box-footer:after {
+            position: absolute;
+            top: 0;
+            left: -16px;
+            width: calc(100% + 32px);
+            height: 1px;
+            content: "";
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .participants {
+            display: flex;
+            align-items: center;
+        }
+
+        .participants img {
+            overflow: hidden;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            -o-object-fit: cover;
+            object-fit: cover;
+        }
+
+        .participants img:not(:first-child) {
+            margin-left: -8px;
+        }
+
+        .add-participant {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            margin-left: 6px;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .urlbtn {
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+            padding: 6px 16px;
+            border: none;
+            border-radius: 20px;
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .urlbtn a {
+            display: block;
+            width: 100%;
+            height: 100%;
+            margin: auto 0;
+            text-decoration: none;
+        }
+
+        @media screen and (max-width: 575px) {
+            .projects-section {
+                overflow: auto;
+
+            }
+
+            .project-boxes {
+                overflow-y: visible;
+            }
+
+
+            .app-content {
+                padding: 16px 12px 24px 12px;
+
+            }
+
+            .status-number, .status-type {
+                font-size: 1em;
+            }
+
+
+            .project-boxes.jsGridView .project-box-wrapper {
+                width: 100%;
+            }
+
+            .projects-section {
+                padding: 24px 16px 0 16px;
+            }
+
+            .profile-btn img {
+                width: 24px;
+                height: 24px;
+            }
+
+
+            .projects-section-header p,
+            .projects-section-header .time {
+                font-size: 18px;
+            }
+
+            .status-type {
+                padding-right: 4px;
+            }
+
+            .status-type:after {
+                display: none;
+            }
+
+
+            .box-content-header {
+                font-size: 12px;
+                line-height: 16px;
+            }
+
+            .box-content-subheader {
+                font-size: 12px;
+                line-height: 16px;
+            }
+
+            .project-boxes.jsListView .project-box-header > span {
+                font-size: 10px;
+            }
+
+            .box-progress-header {
+                font-size: 12px;
+            }
+
+            .box-progress-percentage {
+                font-size: 10px;
+            }
+
+            .urlbtn {
+                font-size: 0.8em;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                margin: auto 0;
+                text-align: center;
+            }
+
+
+            .project-boxes.jsListView .project-box > * {
+                margin-right: 10px;
+            }
+
+            .project-boxes.jsListView .more-wrapper {
+                top: 10px;
+                right: 2px;
+            }
+
+        }
+
+        @media screen and (min-width: 576px) {
+            .app-content {
+                padding: 16px 12px 24px 12px;
+
+            }
+
+            .project-boxes.jsGridView .project-box-wrapper {
+                width: 50%;
+            }
+
+            .status-number, .status-type {
+                font-size: 1.2em;
+            }
+
+            .status-type:after {
+                width: 4px;
+                height: 4px;
+            }
+
+            .item-status {
+                margin-right: 0;
+            }
+        }
+
+        @media screen and (min-width: 768px) {
+            .app-content {
+                padding: 16px 12px 24px 12px;
+
+            }
+        }
+
+        @media screen and (min-width: 992px) {
+            .app-content {
+                padding: 16px 12px 24px 12px;
+
+            }
+
+            .profile-btn span {
+                display: none;
+            }
+
+            .add-btn svg, .notification-btn svg, .mode-switch svg {
+                width: 16px;
+                height: 16px;
+            }
+
+            .app-header-right button {
+                margin-left: 4px;
+            }
+
+            .box-content-header, .box-content-subheader {
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+            .project-boxes.jsGridView .project-box-wrapper {
+                width: 33.3%;
+            }
+
+        }
+
+        @media (prefers-color-scheme: light) {
+
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .app-content {
+                background: #343A40;
+            }
+
+            .projects-section {
+                background: #1F1C2E;
+            }
+
+            .projects-section-header p {
+                color: #FFFFFF;
+            }
+
+            .projects-status .item-status span {
+                color: #FFFFFF;
+            }
+
+            .project-box-header span {
+                color: #838383;
+            }
+
+            .project-box-content-header * {
+                color: #8F8F8F;
+            }
+
+            .box-progress-percentage, .box-progress-header {
+                color: #838383;
+            }
+
+        }
+
+
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="app-content">
+        <div class="projects-section">
+            <div class="projects-section-header">
+                <p>版本库合集</p>
+                <p class="time">2022.11.13</p>
+            </div>
+            <div class="projects-section-line">
+                <div class="projects-status">
+                    <div class="item-status">
+                        <span class="status-number">6</span>
+                        <span class="status-type">全部列表</span>
+                    </div>
+                    <div class="item-status">
+                        <span class="status-number">2</span>
+                        <span class="status-type">原版</span>
+                    </div>
+                    <div class="item-status">
+                        <span class="status-number">4</span>
+                        <span class="status-type">去验证*</span>
+                    </div>
+                </div>
+
+            </div>
+            <div class="project-boxes jsGridView">
+                <div class="project-box-wrapper">
+                    <div class="project-box" style="background-color: #FEE4CB;">
+                        <div class="project-box-header">
+                            <span>原版</span>
+                            <div class="more-wrapper">
+                                <button class="project-btn-more">
+                                </button>
+                            </div>
+                        </div>
+                        <div class="project-box-content-header">
+                            <p class="box-content-header">安卓/WIN全架构版本收集</p>
+                            <p class="box-content-subheader">https://mcarc.gitee.io</p>
+                        </div>
+                        <div class="box-progress-wrapper">
+                            <p class="box-progress-header">收集率</p>
+                            <div class="box-progress-bar">
+                                <span class="box-progress" style="width: 99.9%; background-color: #FF942E"></span>
+                            </div>
+                            <p class="box-progress-percentage">99.9%</p>
+                        </div>
+                        <div class="project-box-footer">
+                            <div class="participants">
+                                <img alt="头像"
+                                     src="https://q2.qlogo.cn/headimg_dl?dst_uin=627794670&spec=100">
+
+                            </div>
+                            <button class="urlbtn">
+                                <a href="https://mcarc.gitee.io/" style="color: #FF942E;" target="_blank">点我访问</a>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-box-wrapper">
+                    <div class="project-box" style="background-color: #E9E7FD;">
+                        <div class="project-box-header">
+                            <span>去验证*</span>
+                            <div class="more-wrapper">
+                                <button class="project-btn-more">
+
+                                </button>
+                            </div>
+                        </div>
+                        <div class="project-box-content-header">
+                            <p class="box-content-header">安卓版本收集</p>
+                            <p class="box-content-subheader">https://mc233.endyun.ltd</p>
+                        </div>
+                        <div class="box-progress-wrapper">
+                            <p class="box-progress-header">收集率</p>
+                            <div class="box-progress-bar">
+                                <span class="box-progress" style="width: 87%; background-color: #4F3FF0"></span>
+                            </div>
+                            <p class="box-progress-percentage">87%</p>
+                        </div>
+                        <div class="project-box-footer">
+                            <div class="participants">
+                                <img alt="头像"
+                                     src="https://q2.qlogo.cn/headimg_dl?dst_uin=2859772560&spec=100">
+
+                            </div>
+                            <button class="urlbtn">
+                                <a href="https://mc233.endyun.ltd/" style="color: #4F3FF0;" target="_blank">点我访问</a>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-box-wrapper">
+                    <div class="project-box">
+                        <div class="project-box-header">
+                            <span>去验证*</span>
+                            <div class="more-wrapper">
+                                <button class="project-btn-more">
+
+                                </button>
+                            </div>
+                        </div>
+                        <div class="project-box-content-header">
+                            <p class="box-content-header">安卓/IOS/WIN版本收集</p>
+                            <p class="box-content-subheader">https://mc.minebbs.com</p>
+                        </div>
+                        <div class="box-progress-wrapper">
+                            <p class="box-progress-header">收集率</p>
+                            <div class="box-progress-bar">
+                                <span class="box-progress" style="width: 15%; background-color: #096C86"></span>
+                            </div>
+                            <p class="box-progress-percentage">15%</p>
+                        </div>
+                        <div class="project-box-footer">
+                            <div class="participants">
+                                <img alt="头像"
+                                     src="https://q2.qlogo.cn/headimg_dl?dst_uin=1209897320&spec=100">
+
+
+                            </div>
+                            <button class="urlbtn">
+                                <a href="https://mc.minebbs.com/" style="color: #096C86;" target="_blank">点我访问</a>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-box-wrapper">
+                    <div class="project-box" style="background-color: #FFD3E2;">
+                        <div class="project-box-header">
+                            <span>去验证*</span>
+                            <div class="more-wrapper">
+                                <button class="project-btn-more">
+
+                                </button>
+                            </div>
+                        </div>
+                        <div class="project-box-content-header">
+                            <p class="box-content-header">安卓版本收集</p>
+                            <p class="box-content-subheader">https://mcapks.com</p>
+                        </div>
+                        <div class="box-progress-wrapper">
+                            <p class="box-progress-header">收集率</p>
+                            <div class="box-progress-bar">
+                                <span class="box-progress" style="width: 85%; background-color: #DF3670"></span>
+                            </div>
+                            <p class="box-progress-percentage">85%</p>
+                        </div>
+                        <div class="project-box-footer">
+                            <div class="participants">
+                                <img alt="头像"
+                                     src="https://q2.qlogo.cn/headimg_dl?dst_uin=1691109702&spec=100">
+
+                            </div>
+                            <button class="urlbtn">
+                                <a href="https://mcapks.com/" style="color: #DF3670;" target="_blank">点我访问</a>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-box-wrapper">
+                    <div class="project-box" style="background-color: #C8F7DC;">
+                        <div class="project-box-header">
+                            <span>去验证*</span>
+                            <div class="more-wrapper">
+                                <button class="project-btn-more">
+
+                                </button>
+                            </div>
+                        </div>
+                        <div class="project-box-content-header">
+                            <p class="box-content-header">安卓/WIN版本收集</p>
+                            <p class="box-content-subheader">https://mcbbk.blmcpia.com</p>
+                        </div>
+                        <div class="box-progress-wrapper">
+                            <p class="box-progress-header">收集率</p>
+                            <div class="box-progress-bar">
+                                <span class="box-progress" style="width: 84%; background-color: #34C471"></span>
+                            </div>
+                            <p class="box-progress-percentage">84%</p>
+                        </div>
+                        <div class="project-box-footer">
+                            <div class="participants">
+                                <img alt="头像"
+                                     src="https://q2.qlogo.cn/headimg_dl?dst_uin=2956553638&spec=100">
+
+
+                            </div>
+                            <button class="urlbtn">
+                                <a href="https://mcbbk.blmcpia.com/" style="color: #34C471;"
+                                   target="_blank">点我访问</a>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-box-wrapper">
+                    <div class="project-box" style="background-color: #B4D9FFFF;">
+                        <div class="project-box-header">
+                            <span>原版</span>
+                            <div class="more-wrapper">
+                                <button class="project-btn-more">
+
+                                </button>
+                            </div>
+                        </div>
+                        <div class="project-box-content-header">
+                            <p class="box-content-header">WIN版本收集</p>
+                            <p class="box-content-subheader">https://www.mcappx.com</p>
+                        </div>
+                        <div class="box-progress-wrapper">
+                            <p class="box-progress-header">收集率</p>
+                            <div class="box-progress-bar">
+                                <span class="box-progress" style="width: 99%; background-color: #73A0FFFF"></span>
+                            </div>
+                            <p class="box-progress-percentage">99%</p>
+                        </div>
+                        <div class="project-box-footer">
+                            <div class="participants">
+                                <img alt="头像"
+                                     src="https://q2.qlogo.cn/headimg_dl?dst_uin=2598814466&spec=100">
+
+
+                            </div>
+                            <button class="urlbtn">
+                                <a href="https://www.mcappx.com/" style="color: #73A0FFFF;" target="_blank">点我访问</a>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-box-wrapper">
+                    <div class="project-box" style="background-color: #D5DEFF;">
+                        <div class="project-box-header">
+                            <span>啊哈哈</span>
+                            <div class="more-wrapper">
+                                <button class="project-btn-more">
+                                    <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                         stroke-linejoin="round" class="feather feather-more-vertical">
+                                        <circle cx="12" cy="12" r="1"/>
+                                        <circle cx="12" cy="5" r="1"/>
+                                        <circle cx="12" cy="19" r="1"/>
+                                    </svg> -->
+                                </button>
+                            </div>
+                        </div>
+                        <div class="project-box-content-header">
+                            <p class="box-content-header">收集率并不准确，仅供参考</p>
+                            <p class="box-content-subheader">网站顺序随机，无关先后</p>
+                        </div>
+                        <div class="box-progress-wrapper">
+                            <p class="box-progress-header">标 * 的表示安卓资源来自于 zihao_il</p>
+                            <div class="box-progress-bar">
+                                <span class="box-progress" style="width: 00%; background-color: #4067F9"></span>
+                            </div>
+                            <p class="box-progress-percentage">0%</p>
+                        </div>
+                        <div class="project-box-footer">
+                            <div class="participants">
+                                <img alt="头像"
+                                     src="https://q2.qlogo.cn/headimg_dl?dst_uin=1767927045&spec=100">
+
+                                <!-- <button class="add-participant" style="color: #4067f9;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                                         fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                                         stroke-linejoin="round" class="feather feather-plus">
+                                        <path d="M12 5v14M5 12h14"/>
+                                    </svg>
+                                </button> -->
+                            </div>
+                            <button class="urlbtn">
+                                <a href="view/index2.html" style="color: #4067F9;" target="main">点我访问</a>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script></script>
+</body>
+</html>
