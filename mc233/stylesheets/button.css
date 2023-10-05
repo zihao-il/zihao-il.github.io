@@ -1,0 +1,12 @@
+.md-button {
+    width: 100%;
+    border-radius: 0.5rem !important;
+    text-align: center;
+}
+
+.button-all {
+    width: 32%;
+    /*margin: 0.1rem;*/
+    margin-top: 0.5rem;
+    border-radius: 0 !important;
+}
