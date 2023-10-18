@@ -1,4 +1,4 @@
-import{Z as tt,u as W,_ as nt,g as z,n as rt,y as He,r as st,e as N,l as qe,p as ae,f as ot,w as ct}from"./@vue-86d35308.js";/*!
+import{Z as tt,g as z,u as W,_ as nt,y as He,n as rt,r as st,e as N,l as qe,p as ae,f as ot,w as ct}from"./@vue-86d35308.js";/*!
   * vue-router v4.2.5
   * (c) 2023 Eduardo San Martin Morote
   * @license MIT
