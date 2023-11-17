@@ -1,0 +1,1 @@
+const r=function(e){if(e===null)return"未确定时间";{const t=new Date(e),n=t.getFullYear(),o=(t.getMonth()+1).toString().padStart(2,"0"),a=t.getDate().toString().padStart(2,"0");return`${n}-${o}-${a}`}};export{r as u};
