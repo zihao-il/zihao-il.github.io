@@ -1,0 +1,1 @@
+import{a as o}from"./axios-47b9d439.js";const e=o.create({timeout:5e3,headers:{"Content-Type":"application/x-www-form-urlencoded"}}),s=function(t){return e({url:"/api/get_version",method:"post",data:t})},a=function(t){return e({url:"/api/search_version",method:"get",params:t})},n=function(t){return e({url:"/api/last_version",method:"post",data:t})};export{s as g,n as l,a as s};
