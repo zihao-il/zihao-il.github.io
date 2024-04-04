@@ -7,8 +7,8 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "favicon-192x.png",
-      "sizes": "192x192",
+      "src": "favicon-256x.png",
+      "sizes": "256x256",
       "type": "image/png"
     },
     {
