@@ -2,6 +2,7 @@
   "name": "MC版本库-开源版",
   "short_name": "MC版本库-开源版",
   "description": "Minecraft for Android 版本库",
+  "start_url": ".",
   "display": "standalone",
   "orientation": "portrait-primary",
   "icons": [
