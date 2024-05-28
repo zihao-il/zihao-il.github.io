@@ -1,0 +1,53 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+@font-face {
+    font-family: 'Minecraft';
+    src: url('../font/minecraft.woff2') format('woff2');
+}
+
+body {
+    font-family: 'Minecraft', sans-serif;
+}
+
+.table {
+    text-align: center;
+}
+
+
+header {
+    width: 100%;
+    height: 400px;
+}
+
+#skin_container {
+    position: fixed;
+    z-index: 9999;
+    left: 50%;
+    transform: translate(-50%, 0);
+
+}
+
+.control_btn {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#save_btn {
+    margin-left: 0.5em;
+
+}
+
+section {
+    margin-bottom: 1em;
+}
+
+.auto-label {
+    padding-bottom: 5px;
+}
+
+.footer {
+    text-align: center;
+}

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+          name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+    <script src="./js/skinview3d.bundle.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link href="./css/index.css" rel="stylesheet">
+    <title>MC-3D皮肤浏览</title>
+    <style>
+    </style>
+</head>
+<body>
+
+<header>
+    <canvas id="skin_container"></canvas>
+
+</header>
+<div class="container">
+    <section class="control_btn">
+        <button class="btn btn-danger" id="reset_btn" type="button">重置</button>
+
+        <button class="btn btn-primary" id="save_btn" type="button">保存</button>
+    </section>
+
+    <section>
+        <div class="card">
+            <h5 class="card-header">设置皮肤</h5>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="form-check me-3">
+                        <input checked class="form-check-input" id="skin_steve" name="skin_default" type="radio"
+                               value="Steve">
+                        <label class="form-check-label" for="skin_steve">
+                            Steve
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" id="skin_alex" name="skin_default" type="radio" value="Alex">
+                        <label class="form-check-label" for="skin_alex">
+                            Alex
+                        </label>
+                    </div>
+                    <div class="ms-auto">
+                        <div class="form-group d-flex align-items-center">
+                            <label class="mr-1" for="skin_model">模型：</label>
+                            <select class="form-select w-auto" id="skin_model">
+                                <option selected value="auto-detect">默认</option>
+                                <option value="default">宽型</option>
+                                <option value="slim">纤细</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="input-group mb-3">
+                    <input accept="image/*" class="form-control" id="skin_upload" size="1048576" type="file">
+                    <button class="btn btn-outline-danger" id="skin_clear_btn" type="button">清除</button>
+                </div>
+
+                <div class="d-flex align-items-center mb-3">
+                    <label class="col-form-label me-1 flex-shrink-0" for="skin_name">用户名：</label>
+                    <input class="form-control flex-grow-1" id="skin_name" type="text">
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+
+    <section>
+        <div class="card">
+            <h5 class="card-header">设置行动</h5>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="form-check me-3">
+                        <input checked class="form-check-input" id="animation_none" name="skin_animation" type="radio"
+                               value="">
+                        <label class="form-check-label" for="animation_none">
+                            无
+                        </label>
+                    </div>
+                    <div class="form-check me-3">
+                        <input class="form-check-input" id="animation_idle" name="skin_animation" type="radio"
+                               value="idle">
+                        <label class="form-check-label" for="animation_idle">
+                            闲置
+                        </label>
+                    </div>
+                    <div class="form-check me-3">
+                        <input class="form-check-input" id="animation_walk" name="skin_animation" type="radio"
+                               value="walk">
+                        <label class="form-check-label" for="animation_walk">
+                            行走
+                        </label>
+                    </div>
+                    <div class="form-check me-3">
+                        <input class="form-check-input" id="animation_run" name="skin_animation" type="radio"
+                               value="run">
+                        <label class="form-check-label" for="animation_run">
+                            奔跑
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" id="animation_fly" name="skin_animation" type="radio"
+                               value="fly">
+                        <label class="form-check-label" for="animation_fly">
+                            飞行
+                        </label>
+                    </div>
+
+
+                </div>
+
+
+                <div class="d-flex align-items-center mb-3">
+                    <label class="col-form-label me-1 flex-shrink-0" for="animation_speed">速度：</label>
+                    <div class="me-2 flex-grow-1">
+                        <div class="input-group">
+                            <input class="form-control" id="animation_speed" placeholder="速度" step="0.1" type="number"
+                                   value="1.0">
+                        </div>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" id="animation_speed_btn" type="button">暂停</button>
+                    </div>
+                </div>
+
+                <hr>
+                <div class="input-group mb-3">
+                    <div class="input-group-text">
+                        <label class="form-check-label me-2 auto-label my-0" for="auto_rotate">旋转</label>
+                        <input class="form-check-input mt-0" id="auto_rotate" type="checkbox"
+                               value="">
+                    </div>
+                    <input aria-label="速度" class="form-control" id="auto_rotate_speed" placeholder="速度" step="0.1"
+                           type="number" value="2.0">
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <section>
+        <div class="card">
+            <h5 class="card-header">设置背部</h5>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+
+                    <div class="form-check me-3">
+                        <input checked class="form-check-input" id="back_none" name="back_items" type="radio" value="">
+                        <label class="form-check-label" for="back_none">
+                            无
+                        </label>
+                    </div>
+                    <div class="form-check me-3">
+                        <input class="form-check-input" id="back_cape" name="back_items" type="radio" value="cape">
+                        <label class="form-check-label" for="back_cape">
+                            披风
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" id="back_elytra" name="back_items" type="radio" value="elytra">
+                        <label class="form-check-label" for="back_elytra">
+                            鞘翅
+                        </label>
+                    </div>
+
+
+                </div>
+
+                <div class="input-group mb-3">
+                    <label class="col-form-label me-1 flex-shrink-0" for="cape">披风：</label>
+                    <select class="form-select" id="cape">
+                        <option selected value="">无</option>
+                        <option value="Vanilla_Cape_Texture">原版披风</option>
+                        <option value="MSCapeC">迁移者披风</option>
+                        <option value="Cherry_Cape_texture">樱花披风</option>
+                        <option value="15Year_texture_JE">15周年纪念披风</option>
+                        <option value="Pancape_Cape">薄煎饼披风</option>
+                        <option value="Minecon_Live_2019_Cape_File">MINECON Live 2019创始人披风</option>
+                        <option value="MojangStudios_cape_texture">Mojang Studios披风</option>
+                        <option value="ProgressPrideCape_Texture_rv3">进步骄傲披风</option>
+                        <option value="Purple_Heart_Cape_texture">紫色心形披风</option>
+                        <option value="Followers_Cape_texture">追随者披风</option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+    <section>
+        <div class="card">
+            <h5 class="card-header">附加装饰</h5>
+            <div class="card-body">
+
+                <div class="d-flex align-items-center mb-3">
+                    <div class="form-check me-2">
+                        外套：
+                    </div>
+                    <div class="form-check me-3">
+                        <input checked class="form-check-input" id="coat_none" name="coat" type="radio" value="">
+                        <label class="form-check-label" for="coat_none">
+                            无
+                        </label>
+                    </div>
+                    <div class="form-check me-3">
+                        <input class="form-check-input" id="coat_15years" name="coat" type="radio" value="15years">
+                        <label class="form-check-label" for="coat_15years">
+                            15周年
+                        </label>
+                    </div>
+                    <div class="form-check me-3">
+                        <input class="form-check-input" id="coat_TikTok" name="coat" type="radio" value="TikTok">
+                        <label class="form-check-label" for="coat_TikTok">
+                            Tik Tok
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" id="coat_Twitch" name="coat" type="radio" value="Twitch">
+                        <label class="form-check-label" for="coat_Twitch">
+                            Twitch
+                        </label>
+                    </div>
+
+                </div>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="form-check me-2">
+                        披肩：
+                    </div>
+                    <div class="form-check me-3">
+                        <input checked class="form-check-input" id="shawl_none" name="shawl" type="radio" value="">
+                        <label class="form-check-label" for="shawl_none">
+                            无
+                        </label>
+                    </div>
+                    <div class="form-check me-3">
+                        <input class="form-check-input" id="shawl_15years" name="shawl" type="radio"
+                               value="15years">
+                        <label class="form-check-label" for="shawl_15years">
+                            15周年
+                        </label>
+                    </div>
+                    <div class="form-check me-3">
+                        <input class="form-check-input" id="shawl_TikTok" name="shawl" type="radio" value="TikTok">
+                        <label class="form-check-label" for="shawl_TikTok">
+                            Tik Tok
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" id="shawl_Twitch" name="shawl" type="radio" value="Twitch">
+                        <label class="form-check-label" for="shawl_Twitch">
+                            Twitch
+                        </label>
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+
+    <section>
+        <div class="card">
+            <h5 class="card-header">设置皮肤层</h5>
+            <div class="card-body">
+                <table class="table" id="layers_table">
+                    <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">头部</th>
+                        <th scope="col">身体</th>
+                        <th scope="col">左臂</th>
+                        <th scope="col">右臂</th>
+                        <th scope="col">左腿</th>
+                        <th scope="col">右腿</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th scope="row">内层</th>
+                        <td><input aria-label="head" checked class="form-check-input mt-0" data-layer="innerLayer"
+                                   data-part="head"
+                                   type="checkbox" value=""></td>
+                        <td><input aria-label="body" checked class="form-check-input mt-0" data-layer="innerLayer"
+                                   data-part="body"
+                                   type="checkbox" value=""></td>
+                        <td><input aria-label="leftArm" checked class="form-check-input mt-0" data-layer="innerLayer"
+                                   data-part="leftArm" type="checkbox" value=""></td>
+                        <td><input aria-label="rightArm" checked class="form-check-input mt-0" data-layer="innerLayer"
+                                   data-part="rightArm" type="checkbox" value=""></td>
+                        <td><input aria-label="leftLeg" checked class="form-check-input mt-0" data-layer="innerLayer"
+                                   data-part="leftLeg" type="checkbox" value=""></td>
+                        <td><input aria-label="rightLeg" checked class="form-check-input mt-0" data-layer="innerLayer"
+                                   data-part="rightLeg" type="checkbox" value=""></td>
+
+                    </tr>
+                    <tr>
+                        <th scope="row">外层</th>
+                        <td><input aria-label="head" checked class="form-check-input mt-0" data-layer="outerLayer"
+                                   data-part="head"
+                                   type="checkbox" value=""></td>
+                        <td><input aria-label="body" checked class="form-check-input mt-0" data-layer="outerLayer"
+                                   data-part="body"
+                                   type="checkbox" value=""></td>
+                        <td><input aria-label="leftArm" checked class="form-check-input mt-0" data-layer="outerLayer"
+                                   data-part="leftArm" type="checkbox" value=""></td>
+                        <td><input aria-label="rightArm" checked class="form-check-input mt-0" data-layer="outerLayer"
+                                   data-part="rightArm" type="checkbox" value=""></td>
+                        <td><input aria-label="leftLeg" checked class="form-check-input mt-0" data-layer="outerLayer"
+                                   data-part="leftLeg" type="checkbox" value=""></td>
+                        <td><input aria-label="rightLeg" checked class="form-check-input mt-0" data-layer="outerLayer"
+                                   data-part="rightLeg" type="checkbox" value=""></td>
+
+                    </tr>
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+    </section>
+    <footer class="footer">
+        <hr>
+        <div>
+            外套&披肩素材：<a href="https://space.bilibili.com/170651403">邹陈云飞</a></br>
+            使用开源项目：<a href="https://github.com/bs-community/skinview3d">bs-community/skinview3d</a>
+        </div>
+        <div>
+            <br>
+        </div>
+
+    </footer>
+
+
+</div>
+<script src="./js/index.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.min.js"></script>
+
+
+<script async type="module">
+    import Stats from "https://cdn.bootcdn.net/ajax/libs/stats.js/r17/Stats.min.js";
+
+    const stats = new Stats();
+    stats.dom.style.left = "0";
+    stats.dom.style.right = "";
+    $("body").append(stats.dom);
+
+    function loop() {
+        stats.update();
+        requestAnimationFrame(loop)
+    }
+
+    requestAnimationFrame(loop);
+</script>
+</body>
+</html>
