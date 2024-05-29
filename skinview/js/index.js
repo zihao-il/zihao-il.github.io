@@ -68,7 +68,7 @@ $("#skin_clear_btn").on("click", function () {
 
 $("#skin_get_btn").on("click", function () {
     $.ajax({
-        url: 'http://bbk.endyun.ltd:9000/api/je-skin',
+        url: 'https://bbk.endyun.ltd/api/je-skin',
         type: 'POST',
         data: {name: $("#skin_name").val()},
         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
