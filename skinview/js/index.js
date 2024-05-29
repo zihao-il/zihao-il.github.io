@@ -1,7 +1,7 @@
 let skinViewer = new skinview3d.SkinViewer({
     canvas: $("#skin_container")[0],
-    width: 300,
-    height: 400,
+    width: $("body").width(),
+    height: 350,
     skin: "../img/Steve.png",
     enableControls: true
 });
@@ -25,7 +25,6 @@ $("#save_btn").on("click", function () {
 $("#reset_btn").on("click", function () {
     // skinViewer.dispose();
     location.reload();
-
 });
 
 // 切换默认皮肤功能
@@ -64,6 +63,41 @@ $("#skin_clear_btn").on("click", function () {
     $("#skin_upload").val("");
     skin_url = "../img/" + $("input[name='skin_default']:checked").val() + ".png"
     skinViewer.loadSkin(skin_url, {})
+});
+
+
+$("#skin_get_btn").on("click", function () {
+    $.ajax({
+        url: 'http://bbk.endyun.ltd:9000/api/je-skin',
+        type: 'POST',
+        data: {name: $("#skin_name").val()},
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+        dataType: 'json',
+        success: function (result) {
+            if (result.status === 201) {
+                $(".alert-text").text(result.message)
+                $('#skin_modal').modal('show');
+                // 2 秒后自动关闭 Modal
+                setTimeout(function () {
+                    $('#skin_modal').modal('hide');
+                }, 2000);
+            } else {
+                skinViewer.loadSkin(result.skin, {})
+                if (result.hasOwnProperty('cape')) {
+                    skinViewer.loadCape(result.cape, {})
+                }
+                skin_url = result.skin
+            }
+        },
+        error: function (xhr, status, error) {
+            $(".alert-text").text("API请求失败！")
+            $('#skin_modal').modal('show');
+            // 2 秒后自动关闭 Modal
+            setTimeout(function () {
+                $('#skin_modal').modal('hide');
+            }, 2000);
+        }
+    });
 });
 
 
@@ -217,7 +251,7 @@ $("input[name='coat']").on("change", function () {
         old_skin = ""
 
     }
-    
+
 });
 
 $("input[name='shawl']").on("change", function () {
@@ -237,5 +271,28 @@ $("input[name='shawl']").on("change", function () {
         skin_url = old_skin
         old_skin = ""
     }
+
+});
+
+$("#light_global").on("input", function () {
+    skinViewer.globalLight.intensity = $(this).val();
+
+});
+
+$("#light_camera").on("input", function () {
+    skinViewer.cameraLight.intensity = $(this).val();
+
+});
+
+$("input[name='ears']").on("change", function () {
+    if ($(this).val() !== "") {
+        skinViewer.loadSkin(skin_url, {
+            model: $("#skin_model").val(),
+            ears: true
+        })
+    } else {
+        skinViewer.loadEars(null)
+    }
+
 
 });

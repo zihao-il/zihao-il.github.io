@@ -64,8 +64,11 @@
 
                 <div class="d-flex align-items-center mb-3">
                     <label class="col-form-label me-1 flex-shrink-0" for="skin_name">用户名：</label>
-                    <input class="form-control flex-grow-1" id="skin_name" type="text">
+                    <input class="form-control flex-grow-1 me-1" id="skin_name" type="text">
+                    <button class="btn btn-outline-primary flex-shrink-0" id="skin_get_btn" type="button">窃取皮肤
+                    </button>
                 </div>
+
 
             </div>
         </div>
@@ -203,7 +206,7 @@
             <div class="card-body">
 
                 <div class="d-flex align-items-center mb-3">
-                    <div class="form-check me-2">
+                    <div class="me-2">
                         外套：
                     </div>
                     <div class="form-check me-3">
@@ -233,7 +236,7 @@
 
                 </div>
                 <div class="d-flex align-items-center mb-3">
-                    <div class="form-check me-2">
+                    <div class="me-2">
                         披肩：
                     </div>
                     <div class="form-check me-3">
@@ -332,6 +335,45 @@
         </div>
 
     </section>
+
+    <section>
+        <div class="card">
+            <h5 class="card-header">其他设置</h5>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <label class="col-form-label me-1 flex-shrink-0" for="light_global">全局光：</label>
+                    <input class="form-control flex-grow-1 me-2" id="light_global" step="1" type="text" value="3">
+                    <label class="col-form-label me-1 flex-shrink-0" for="light_camera">相机光：</label>
+                    <input class="form-control flex-grow-1 me-1" id="light_camera" step="0.1" type="text" value="0.6">
+                </div>
+
+                <div class="d-flex align-items-center mb-3">
+                    <div class="me-2">
+                        耳朵：
+                    </div>
+                    <div class="form-check me-3">
+                        <input checked class="form-check-input" id="ears_none" name="ears" type="radio" value="">
+                        <label class="form-check-label" for="ears_none">
+                            无
+                        </label>
+                    </div>
+                    <div class="form-check me-3">
+                        <input class="form-check-input" id="ears_skin" name="ears" type="radio" value="true">
+                        <label class="form-check-label" for="ears_skin">
+                            皮肤样式
+                        </label>
+                    </div>
+
+
+                </div>
+
+
+            </div>
+        </div>
+
+    </section>
+
+
     <footer class="footer">
         <hr>
         <div>
@@ -345,7 +387,21 @@
     </footer>
 
 
+    <div aria-hidden="true" aria-labelledby="myModalLabel" class="modal fade" id="skin_modal" role="dialog"
+         tabindex="-1">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+
+                    <div class="alert alert-danger alert-dismissible fade show alert-text" role="alert">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
 <script src="./js/index.js"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.min.js"></script>
 
