@@ -1,0 +1,20 @@
+{
+  "name": "MC-3D皮肤预览",
+  "short_name": "MC-3D皮肤预览",
+  "description": "Minecraft-3D皮肤预览",
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./img/favicon-256x.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "./img/favicon.ico",
+      "sizes": "256x256",
+      "type": "image/ico"
+    }
+  ]
+}
