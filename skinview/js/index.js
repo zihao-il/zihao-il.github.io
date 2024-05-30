@@ -65,7 +65,7 @@ $("#skin_clear_btn").on("click", function () {
     skinViewer.loadSkin(skin_url, {})
 });
 
-
+// 窃取皮肤功能
 $("#skin_get_btn").on("click", function () {
     $.ajax({
         url: 'https://bbk.endyun.ltd/api/je-skin',
@@ -77,10 +77,9 @@ $("#skin_get_btn").on("click", function () {
             if (result.status === 201) {
                 $(".alert-text").text(result.message)
                 $('#skin_modal').modal('show');
-                // 2 秒后自动关闭 Modal
                 setTimeout(function () {
                     $('#skin_modal').modal('hide');
-                }, 2000);
+                }, 2000); // 设置两秒后自动关闭
             } else {
                 skinViewer.loadSkin(result.skin, {})
                 if (result.hasOwnProperty('cape')) {
@@ -92,7 +91,6 @@ $("#skin_get_btn").on("click", function () {
         error: function (xhr, status, error) {
             $(".alert-text").text("API请求失败！")
             $('#skin_modal').modal('show');
-            // 2 秒后自动关闭 Modal
             setTimeout(function () {
                 $('#skin_modal').modal('hide');
             }, 2000);
@@ -178,7 +176,7 @@ $("#skin_model").on("change", function () {
 
 });
 
-
+// 皮肤层功能
 const skinParts = ["head", "body", "leftArm", "rightArm", "leftLeg", "rightLeg"];
 const skinLayers = ["innerLayer", "outerLayer"];
 
@@ -190,7 +188,7 @@ for (const part of skinParts) {
     }
 }
 
-
+// 设置皮肤名字
 $("#skin_name").on("input", function () {
     let name = $(this).val()
     if (name === "") {
@@ -201,6 +199,8 @@ $("#skin_name").on("input", function () {
     }
 });
 
+
+// 外套披肩功能
 let old_skin = ""
 
 const AddDecoration = function (name, cs, model) {
@@ -208,7 +208,6 @@ const AddDecoration = function (name, cs, model) {
         old_skin = skin_url;
     }
 
-    // Reset to the original skin before adding a new decoration
     let skinImg = new Image();
     skinImg.src = old_skin;
     skinImg.onload = function () {
@@ -277,6 +276,7 @@ $("input[name='shawl']").on("change", function () {
 
 });
 
+// 其他设置功能
 $("#light_global").on("input", function () {
     skinViewer.globalLight.intensity = $(this).val();
 
