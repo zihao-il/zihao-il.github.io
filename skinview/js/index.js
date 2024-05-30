@@ -205,33 +205,36 @@ let old_skin = ""
 
 const AddDecoration = function (name, cs, model) {
     if (old_skin === "") {
-        old_skin = skin_url
+        old_skin = skin_url;
     }
-    let skinImg = skinViewer.skinCanvas;
-    let tempCanvas = $('<canvas>').attr({
-        width: skinImg.width,
-        height: skinImg.height
-    })[0];
-    let tempContext = tempCanvas.getContext('2d');
-    tempContext.drawImage(skinImg, 0, 0);
-    let newImage = new Image();
-    if (model === "auto-detect") {
-        model = "default"
-    }
-    newImage.src = `../img/附加/${name}_${cs}_${model}.png`;
-    newImage.onload = function () {
-        tempContext.drawImage(newImage, 0, 0, tempCanvas.width, tempCanvas.height);
-        let mergedImage = new Image();
-        mergedImage.src = tempCanvas.toDataURL();
 
-        skin_url = mergedImage.src
+    // Reset to the original skin before adding a new decoration
+    let skinImg = new Image();
+    skinImg.src = old_skin;
+    skinImg.onload = function () {
+        let tempCanvas = $('<canvas>').attr({
+            width: skinImg.width,
+            height: skinImg.height
+        })[0];
+        let tempContext = tempCanvas.getContext('2d');
+        tempContext.drawImage(skinImg, 0, 0);
 
-        skinViewer.loadSkin(mergedImage.src, {
-            model: model
-        })
-
+        let newImage = new Image();
+        if (model === "auto-detect") {
+            model = "default";
+        }
+        newImage.src = `../img/附加/${name}_${cs}_${model}.png`;
+        newImage.onload = function () {
+            tempContext.drawImage(newImage, 0, 0, tempCanvas.width, tempCanvas.height);
+            let mergedImage = new Image();
+            mergedImage.src = tempCanvas.toDataURL();
+            skin_url = mergedImage.src;
+            skinViewer.loadSkin(mergedImage.src, {
+                model: model
+            });
+        };
     };
-}
+};
 
 
 $("input[name='coat']").on("change", function () {
