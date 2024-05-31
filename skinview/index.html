@@ -400,7 +400,10 @@
                 </div>
                 <div class="d-flex align-items-center mb-3">
                     <label class="col-form-label me-2" for="disable_follow">禁止模型跟随屏幕：</label>
-                    <input class="form-check-input" id="disable_follow"
+                    <input class="form-check-input me-4" id="disable_follow"
+                           type="checkbox">
+                    <label class="col-form-label me-2" for="hidden_stats">隐藏左上角监视器：</label>
+                    <input class="form-check-input" id="hidden_stats"
                            type="checkbox">
                 </div>
 
@@ -448,7 +451,7 @@
 <script async type="module"> // 左上角监视器
 import Stats from "https://cdn.bootcdn.net/ajax/libs/stats.js/r17/Stats.min.js";
 
-const stats = new Stats();
+window.stats = new Stats();
 stats.dom.style.left = "0";
 stats.dom.style.right = "";
 $("body").append(stats.dom);

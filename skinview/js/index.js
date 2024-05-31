@@ -363,6 +363,10 @@ $("#auto_weight").on("change", function () {
             skinViewer.height = new_Height;
             $("header").css("height", (new_Height + 15) + "px");
         }
+    } else {
+        skinViewer.width = $("body").width();
+        skinViewer.height = 350;
+        $("header").css("height", 365 + "px");
     }
 })
 
@@ -375,3 +379,10 @@ $("#disable_follow").on("change", function () {
     }
 })
 
+$("#hidden_stats").on("change", function () {
+    if ($(this).prop("checked") === true) {
+        stats.dom.style.display = "none";
+    } else {
+        stats.dom.style.display = "block";
+    }
+})
