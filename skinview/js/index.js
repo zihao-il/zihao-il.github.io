@@ -33,6 +33,7 @@ $("input[name='skin_default']").on("change", function () {
     skin_url = "../img/" + $(this).val() + ".png"
     skinViewer.loadSkin(skin_url, {})
     $("input[name='skin_model'][value='auto-detect']").prop("checked", true)
+    initCoatShawl()
 
 });
 
@@ -55,7 +56,7 @@ $("#skin_upload").on("change", function () {
     skin_url = URL.createObjectURL(file)
     skinViewer.loadSkin(skin_url, {})
     $("input[name='skin_model'][value='auto-detect']").prop("checked", true)
-
+    initCoatShawl()
 });
 
 // 清除上传的皮肤
@@ -235,6 +236,12 @@ const AddDecoration = function (name, cs, model) {
     };
 };
 
+
+function initCoatShawl() {
+    $("input[name='shawl']#shawl_none").prop("checked", true);
+    $("input[name='coat']#coat_none").prop("checked", true);
+    old_skin = ""
+}
 
 $("input[name='coat']").on("change", function () {
     if ($("input[name='shawl']:checked").val() !== "") {
