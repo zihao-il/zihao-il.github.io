@@ -299,3 +299,44 @@ $("input[name='ears']").on("change", function () {
 
 
 });
+
+$("#back_color").on("input", function () {
+    $("#back_img").val("");
+    if ($(this).val() === "") {
+        skinViewer.background = null;
+    } else {
+        skinViewer.background = $(this).val();
+    }
+})
+
+$("#back_img").on("change", function () {
+    $("#back_color").val("")
+    const file = this.files[0];
+    let back_url = URL.createObjectURL(file)
+    skinViewer.loadBackground(back_url);
+})
+
+$("#back_img_btn").on("click", function () {
+    $("#back_img").val("");
+    skinViewer.background = null;
+
+})
+
+
+$("#back_width").on("input", function () {
+    if ($(this).val() === "") {
+        skinViewer.width = $("body").width();
+    } else {
+        skinViewer.width = $(this).val();
+
+    }
+})
+
+$("#back_height").on("input", function () {
+    let height = 350;
+    if ($(this).val() !== "") {
+        height = $(this).val();
+    }
+    skinViewer.height = height;
+    $("header").css("height", (parseInt(height) + 15) + "px");
+})

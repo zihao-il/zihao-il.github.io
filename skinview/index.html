@@ -7,7 +7,7 @@
     <meta content="ie=edge" http-equiv="X-UA-Compatible">
     <meta content="zihao_il" name="author"/>
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="manifest" href="./manifest.json" />
+    <link href="./manifest.json" rel="manifest"/>
     <link href="./img/favicon.ico" rel="icon" type="image/x-icon"/>
     <script src="./js/skinview3d.bundle.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -291,7 +291,7 @@
 
     <section>
         <div class="card">
-            <h5 class="card-header">设置皮肤层</h5>
+            <h5 class="card-header">皮肤层</h5>
             <div class="card-body">
                 <table class="table" id="layers_table">
                     <thead>
@@ -378,7 +378,21 @@
                             皮肤样式
                         </label>
                     </div>
+                </div>
 
+                <div class="d-flex align-items-center mb-3">
+                    <label class="col-form-label me-1 flex-shrink-0" for="back_color">设置背景：</label>
+                    <input class="form-control flex-grow-1 me-2" id="back_color" placeholder="#000000" type="text">
+                    <input accept="image/*" class="form-control flex-grow-1  me-1" id="back_img" size="10048576"
+                           type="file">
+                    <button class="btn btn-outline-danger  flex-shrink-0" id="back_img_btn" type="button">清除</button>
+                </div>
+
+                <div class="d-flex align-items-center mb-3">
+                    <label class="col-form-label me-1 flex-shrink-0">背景宽高：</label>
+                    <input type="text" class="form-control" id="back_width" placeholder="高度" aria-label="宽度" >
+                    <span class="input-group-text">X</span>
+                    <input type="text" class="form-control" id="back_height" placeholder="高度" aria-label="高度">
 
                 </div>
 
@@ -425,19 +439,19 @@
 
 
 <script async type="module"> // 左上角监视器
-    import Stats from "https://cdn.bootcdn.net/ajax/libs/stats.js/r17/Stats.min.js";
+import Stats from "https://cdn.bootcdn.net/ajax/libs/stats.js/r17/Stats.min.js";
 
-    const stats = new Stats();
-    stats.dom.style.left = "0";
-    stats.dom.style.right = "";
-    $("body").append(stats.dom);
+const stats = new Stats();
+stats.dom.style.left = "0";
+stats.dom.style.right = "";
+$("body").append(stats.dom);
 
-    function loop() {
-        stats.update();
-        requestAnimationFrame(loop)
-    }
+function loop() {
+    stats.update();
+    requestAnimationFrame(loop)
+}
 
-    requestAnimationFrame(loop);
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>
