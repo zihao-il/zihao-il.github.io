@@ -309,11 +309,21 @@ $("#back_color").on("input", function () {
     }
 })
 
+let back_Width = 0
+let back_Height = 0
+
 $("#back_img").on("change", function () {
     $("#back_color").val("")
     const file = this.files[0];
-    let back_url = URL.createObjectURL(file)
-    skinViewer.loadBackground(back_url);
+    if (file) {
+        const img = new Image();
+        img.onload = function () {
+            back_Width = img.width;
+            back_Height = img.height;
+        };
+        img.src = URL.createObjectURL(file);
+        skinViewer.loadBackground(img.src);
+    }
 })
 
 $("#back_img_btn").on("click", function () {
@@ -332,6 +342,7 @@ $("#back_width").on("input", function () {
     }
 })
 
+
 $("#back_height").on("input", function () {
     let height = 350;
     if ($(this).val() !== "") {
@@ -340,3 +351,27 @@ $("#back_height").on("input", function () {
     skinViewer.height = height;
     $("header").css("height", (parseInt(height) + 15) + "px");
 })
+
+$("#auto_weight").on("change", function () {
+    if ($(this).prop("checked") === true) {
+        if ($("#back_img").val() !== "") {
+            const scale = $("body").width() / back_Width;
+            $("#back_width").val(parseInt($("body").width()));
+            const new_Height = back_Height * scale;
+            $("#back_height").val(parseInt(new_Height));
+            skinViewer.width = $("body").width();
+            skinViewer.height = new_Height;
+            $("header").css("height", (new_Height + 15) + "px");
+        }
+    }
+})
+
+$("#disable_follow").on("change", function () {
+    if ($(this).prop("checked") === true) {
+        $("#skin_container").css("position", "relative");
+    } else {
+        $("#skin_container").css("position", "fixed");
+
+    }
+})
+

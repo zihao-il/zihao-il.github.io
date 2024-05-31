@@ -392,9 +392,18 @@
                     <label class="col-form-label me-1 flex-shrink-0">背景宽高：</label>
                     <input aria-label="宽度" class="form-control" id="back_width" placeholder="宽度" type="text">
                     <span class="input-group-text">X</span>
-                    <input aria-label="高度" class="form-control" id="back_height" placeholder="高度" type="text">
+                    <input aria-label="高度" class="form-control me-2" id="back_height" placeholder="高度" type="text">
+                    <input class="form-check-input me-2" id="auto_weight"
+                           type="checkbox">
+                    <label class="col-form-label me-1 flex-shrink-0" for="auto_weight">自适应<br>背景图</label>
 
                 </div>
+                <div class="d-flex align-items-center mb-3">
+                    <label class="col-form-label me-2" for="disable_follow">禁止模型跟随屏幕：</label>
+                    <input class="form-check-input" id="disable_follow"
+                           type="checkbox">
+                </div>
+
             </div>
         </div>
 
