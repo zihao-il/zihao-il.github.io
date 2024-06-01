@@ -216,13 +216,20 @@ const AddDecoration = function (name, cs, model) {
             width: skinImg.width,
             height: skinImg.height
         })[0];
-        let tempContext = tempCanvas.getContext('2d');
+        let tempContext = tempCanvas.getContext('2d', {willReadFrequently: true});
         tempContext.drawImage(skinImg, 0, 0);
 
+
         let newImage = new Image();
-        if (model === "auto-detect") {
-            model = "default";
+        const isClassic = checkClassicSkin(tempContext);
+        
+        if (isClassic) {
+            model = "default"
+        } else {
+            model = "slim"
+
         }
+
         newImage.src = `../img/附加/${name}_${cs}_${model}.png`;
         newImage.onload = function () {
             tempContext.drawImage(newImage, 0, 0, tempCanvas.width, tempCanvas.height);
@@ -236,6 +243,27 @@ const AddDecoration = function (name, cs, model) {
     };
 };
 
+// 判断皮肤手臂粗细
+function checkClassicSkin(ctx) {
+    const classicArmWidth = 4;
+    const slimArmWidth = 3;
+
+    const armX = 44;
+    const armY = 52;
+
+    const classicPixels = ctx.getImageData(armX, armY, classicArmWidth, 12).data;
+    const slimPixels = ctx.getImageData(armX, armY, slimArmWidth, 12).data;
+
+    let classicOpaque = 0, slimOpaque = 0;
+    for (let i = 3; i < classicPixels.length; i += 4) {
+        if (classicPixels[i] === 255) classicOpaque++;
+    }
+    for (let i = 3; i < slimPixels.length; i += 4) {
+        if (slimPixels[i] === 255) slimOpaque++;
+    }
+
+    return slimOpaque < classicOpaque;
+}
 
 function initCoatShawl() {
     $("input[name='shawl']#shawl_none").prop("checked", true);
