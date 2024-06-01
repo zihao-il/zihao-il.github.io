@@ -64,6 +64,7 @@ $("#skin_clear_btn").on("click", function () {
     $("#skin_upload").val("");
     skin_url = "../img/" + $("input[name='skin_default']:checked").val() + ".png"
     skinViewer.loadSkin(skin_url, {})
+    initCoatShawl()
 });
 
 // 窃取皮肤功能
