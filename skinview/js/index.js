@@ -223,7 +223,7 @@ const AddDecoration = function (name, cs, model) {
 
         let newImage = new Image();
         const isClassic = checkClassicSkin(tempContext);
-        
+
         if (isClassic) {
             model = "default"
         } else {
@@ -359,6 +359,7 @@ $("#back_img").on("change", function () {
         };
         img.src = URL.createObjectURL(file);
         skinViewer.loadBackground(img.src);
+        $("#auto_weight").prop("checked", false);
     }
 })
 
@@ -422,3 +423,13 @@ $("#hidden_stats").on("change", function () {
         stats.dom.style.display = "block";
     }
 })
+
+$("#fov").on("input", function () {
+    skinViewer.fov = $(this).val();
+
+});
+
+$("#zoom").on("input", function () {
+    skinViewer.zoom = $(this).val();
+
+});
