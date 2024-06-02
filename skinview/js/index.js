@@ -433,3 +433,8 @@ $("#zoom").on("input", function () {
     skinViewer.zoom = $(this).val();
 
 });
+
+$(window).resize(function () {
+    skinViewer.width = $("body").width();
+
+});
