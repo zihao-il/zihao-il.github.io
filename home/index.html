@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="webkit" name="renderer">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <script src="/static/pixi.min.js" type="text/javascript"></script>
+    <script src="/static/main.js" type="text/javascript"></script>
+    <title>首页</title>
+    <style>
+        canvas {
+            position: fixed;
+            z-index: -2;
+            top: 0;
+            left: 0;
+            display: block;
+            pointer-events: none
+        }
+
+        a:hover,
+        a:link,
+        a:visited,
+        a:active,
+        a:focus {
+            text-decoration: none;
+
+        }
+
+        button,
+        input,
+        input:focus {
+            border: none;
+            outline: none;
+
+        }
+
+        a,
+        button,
+        input {
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+
+        * {
+
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* Internet Explorer/Edge */
+            -webkit-user-select: none; /* Safari */
+            user-select: none; /* 其他浏览器 */
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-text-size-adjust: none
+        }
+
+        img {
+            vertical-align: middle;
+            border: 0;
+        }
+
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            background: radial-gradient(#619BFF, #E0E0E3);
+        }
+
+        .main {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            width: 35%;
+        }
+
+        @media screen and (max-width: 1024px) {
+            .main {
+                width: 45%;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .main {
+                width: 50%;
+            }
+        }
+
+        @media screen and (max-width: 540px) {
+            .main {
+                width: 60% !important;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .main {
+                width: 90% !important;
+            }
+        }
+
+        @media screen and (max-width: 360px) {
+            .main {
+                width: 100% !important;
+            }
+        }
+
+
+        img {
+            transition: .4s ease-in-out;
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            box-shadow: 0 0 20px 5px #E6E8EA;
+        }
+
+        h1 {
+
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 2em;
+            color: #FFFFFF;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin: 0;
+            padding-bottom: 45px;
+            color: #FFFFFFA3;
+        }
+
+        ul {
+            position: relative;
+            display: -ms-inline-flexbox;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 85%;
+            height: 80px;
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+            border-top: 2px solid hsla(0, 0%, 100%, .1);
+            border-bottom: 2px solid hsla(0, 0%, 100%, .1);
+            -ms-flex-pack: distribute;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 40px;
+            transition: all .2s;
+            border-right: 1px solid hsla(0, 0%, 100%, .1);
+            border-left: 1px solid hsla(0, 0%, 100%, .1);
+        }
+
+        a {
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all .2s;
+
+            color: #FFFFFF;
+        }
+
+        a:hover {
+            color: #FFFFFF !important;
+            text-shadow: 0 0 20px #FFFFFF;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 5px;
+        }
+
+        .icp {
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+<div class="main">
+
+    <img alt="avatar" height="130" src="https://q1.qlogo.cn/g?b=qq&nk=1767927045&s=5" width="130">
+    <h1>zihao_il</h1>
+    <!--    <h2></h2>-->
+
+    <ul>
+        <li><a href="https://bbk.endyun.ltd/"><span>MC版本库</span></a></li>
+        <li><a href="https://github.com/zihao-il/zihao-il.github.io"><span>GitHub</span></a></li>
+
+    </ul>
+
+</div>
+<div class="footer">
+    <a class="icp" href="https://beian.miit.gov.cn/" target="_blank">皖ICP备2021010946号-2</a>
+</div>
+</body>
+<script>
+
+</script>
+</html>
