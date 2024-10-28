@@ -80,3 +80,11 @@ section {
     background-color: transparent;
     box-shadow: none;
 }
+
+.form-check {
+    padding-top: 1em;
+}
+
+.attach-title {
+    padding-top: 0.5em;
+}
