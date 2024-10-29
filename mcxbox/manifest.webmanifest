@@ -1,0 +1,16 @@
+{
+  "name": "MC房间查看",
+  "short_name": "MC房间查看",
+  "start_url": ".",
+  "description": "Minecraft在线房间查看",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "256x256",
+      "type": "image/ico"
+    }
+  ]
+}
