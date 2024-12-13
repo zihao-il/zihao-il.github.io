@@ -36,6 +36,7 @@ header {
 }
 
 #save_btn {
+    margin-right: 0.5em;
     margin-left: 0.5em;
 
 }
@@ -52,21 +53,12 @@ section {
     text-align: center;
 }
 
-.modal-header {
-    display: none;
-}
-
-
-.modal {
+.skin-modal {
     background-color: transparent;
 }
 
-.modal-backdrop {
-    display: none;
-}
-
-.modal-dialog {
-    z-index: 99999;
+.skin-dialog {
+    z-index: 9999;
     display: flex;
     align-items: end;
     justify-content: center;
@@ -75,7 +67,7 @@ section {
     margin: 0 auto;
 }
 
-.modal-content {
+.skin-modal-content {
     border: none;
     background-color: transparent;
     box-shadow: none;
@@ -87,4 +79,8 @@ section {
 
 .attach-title {
     padding-top: 0.5em;
+}
+
+.pack-modal {
+
 }

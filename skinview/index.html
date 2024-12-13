@@ -12,6 +12,7 @@
     <link href="./img/favicon.ico" rel="icon" type="image/x-icon"/>
     <script src="./js/skinview3d.bundle.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script type="text/javascript">
         (function (c, l, a, r, i, t, y) {
             c[a] = c[a] || function () {
@@ -40,6 +41,8 @@
         <button class="btn btn-danger" id="reset_btn" type="button">重置</button>
 
         <button class="btn btn-primary" id="save_btn" type="button">保存</button>
+
+        <button class="btn btn-success" data-bs-target="#packModal" data-bs-toggle="modal" type="button">皮肤包</button>
     </section>
 
     <section>
@@ -284,7 +287,6 @@
                     </div>
 
 
-
                 </div>
                 <div class="d-flex align-items-center flex-wrap mb-3">
                     <div class="attach-title">
@@ -328,7 +330,8 @@
                         </label>
                     </div>
                     <div class="form-check ms-3">
-                        <input class="form-check-input" id="shawl_Eyeblossom" name="shawl" type="radio" value="Eyeblossom">
+                        <input class="form-check-input" id="shawl_Eyeblossom" name="shawl" type="radio"
+                               value="Eyeblossom">
                         <label class="form-check-label" for="shawl_Eyeblossom">
                             眼眸花
                         </label>
@@ -495,14 +498,44 @@
     </footer>
 
 
-    <div aria-hidden="true" aria-labelledby="myModalLabel" class="modal fade" id="skin_modal" role="dialog"
+    <div aria-hidden="true" aria-labelledby="myModalLabel" class="modal fade skin-modal" id="skin_modal" role="dialog"
          tabindex="-1">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
+        <div class="modal-dialog skin-dialog" role="document">
+            <div class="modal-content skin-modal-content">
                 <div class="modal-body">
                     <div class="alert alert-danger alert-dismissible fade show alert-text" role="alert">
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div aria-hidden="true" aria-labelledby="packModalLabel" class="modal fade  pack-modal" data-bs-backdrop="static"
+     data-bs-keyboard="false" id="packModal" tabindex="99999">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header skin-modal-header">
+                <h1 class="modal-title fs-5" id="packModalLabel">设置皮肤包名</h1>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+            </div>
+            <div class="modal-body">
+                <form class="pack_name-form">
+                    <div class="mb-3">
+                        <label class="col-form-label" for="pack_skin_name">请输入皮肤名：</label>
+                        <input class="form-control" id="pack_skin_name" placeholder="史蒂夫"
+                               type="text">
+                        <label class="col-form-label" for="pack_name">请输入皮肤包名：</label>
+                        <input class="form-control" id="pack_name" pattern="^[^\s]+$" placeholder="我的皮肤包"
+                               title="名称不能包含空格" type="text">
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">取消</button>
+                <button class="btn btn-primary" id="zip_btn" type="submit">下载</button>
             </div>
         </div>
     </div>

@@ -205,43 +205,43 @@ $("#skin_name").on("input", function () {
 // 外套披肩功能
 let old_skin = ""
 
-const AddDecoration = function (name, cs, model) {
+const AddDecoration = async function (name, cs, model) {
     if (old_skin === "") {
         old_skin = skin_url;
     }
 
-    let skinImg = new Image();
-    skinImg.src = old_skin;
-    skinImg.onload = function () {
-        let tempCanvas = $('<canvas>').attr({
-            width: skinImg.width,
-            height: skinImg.height
-        })[0];
-        let tempContext = tempCanvas.getContext('2d', {willReadFrequently: true});
-        tempContext.drawImage(skinImg, 0, 0);
+
+    const skinImg = await loadImageAsync(old_skin);
+    let tempCanvas = $('<canvas>').attr({
+        width: skinImg.width,
+        height: skinImg.height
+    })[0];
 
 
-        let newImage = new Image();
-        const isClassic = checkClassicSkin(tempContext);
+    let tempContext = tempCanvas.getContext('2d', {willReadFrequently: true});
+    tempContext.drawImage(skinImg, 0, 0);
 
-        if (isClassic) {
-            model = "default"
-        } else {
-            model = "slim"
 
-        }
+    let newImage = new Image();
+    const isClassic = checkClassicSkin(tempContext);
+    if (isClassic) {
+        model = "default"
+    } else {
+        model = "slim"
 
-        newImage.src = `../img/附加/${name}_${cs}_${model}.png`;
-        newImage.onload = function () {
-            tempContext.drawImage(newImage, 0, 0, tempCanvas.width, tempCanvas.height);
-            let mergedImage = new Image();
-            mergedImage.src = tempCanvas.toDataURL();
-            skin_url = mergedImage.src;
-            skinViewer.loadSkin(mergedImage.src, {
-                model: model
-            });
-        };
+    }
+
+    newImage.src = `../img/附加/${name}_${cs}_${model}.png`;
+    newImage.onload = function () {
+        tempContext.drawImage(newImage, 0, 0, tempCanvas.width, tempCanvas.height);
+        let mergedImage = new Image();
+        mergedImage.src = tempCanvas.toDataURL();
+        skin_url = mergedImage.src;
+        skinViewer.loadSkin(mergedImage.src, {
+            model: model
+        });
     };
+
 };
 
 // 判断皮肤手臂粗细
@@ -438,3 +438,118 @@ $(window).resize(function () {
     skinViewer.width = $("body").width();
 
 });
+
+const generateManifest = (name) => {
+    const uuid = () => 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+
+    return JSON.stringify({
+        format_version: 2,
+        header: {
+            name: `${name}`,
+            description: "皮肤包制作网站：skin.endyun.ltd",
+            uuid: uuid(),
+            version: [1, 0, 0]
+        },
+        modules: [
+            {
+                type: "skin_pack",
+                uuid: uuid(),
+                version: [1, 0, 0]
+            }
+        ]
+    }, null, 4);
+}
+
+const generateSkins = (name, skinData) => {
+
+    return JSON.stringify({
+        "skins": [
+            {
+                "localization_name": "skin",
+                "geometry": skinData === "default"
+                    ? "geometry.humanoid.custom"
+                    : "geometry.humanoid.customSlim",
+                "texture": "skin.png",
+                "type": "free"
+            },
+        ],
+        "serialize_name": `${name}`,
+        "localization_name": `${name}`
+    }, null, 4);
+}
+
+const generateLang = (name, nickName) => {
+    return `skinpack.${name}=${name}\nskin.${name}.skin=${nickName}`
+
+}
+
+
+const loadImageAsync = (src) => {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = src;
+        img.onload = () => resolve(img);
+    });
+}
+
+$("#zip_btn").on("click", async function () {
+    if (!$(".pack_name-form")[0].checkValidity()) {
+        $(".pack_name-form")[0].reportValidity();
+        return;
+    }
+
+
+    let model
+    const skinImg = await loadImageAsync(skin_url);
+    let tempCanvas = $('<canvas>').attr({
+        width: skinImg.width,
+        height: skinImg.height
+    })[0];
+    let tempContext = tempCanvas.getContext('2d', {willReadFrequently: true});
+    tempContext.drawImage(skinImg, 0, 0);
+
+    const isClassic = checkClassicSkin(tempContext);
+    model = isClassic ? "default" : "slim";
+
+    let name = $("#pack_name").val() || "我的皮肤包";
+    let nickName = $("#pack_skin_name").val() || "史蒂夫";
+
+    const zip = new JSZip();
+
+    zip.file("manifest.json", generateManifest(name));
+    zip.file("skins.json", generateSkins(name, model));
+    zip.file("texts/zh_CN.lang", generateLang(name, nickName));
+
+
+    const dataURL = skinViewer.skinCanvas.toDataURL('image/png');
+
+    const skinData = atob(dataURL.split(',')[1]);
+    const binaryData = new Uint8Array(skinData.length);
+    for (let i = 0; i < skinData.length; i++) {
+        binaryData[i] = skinData.charCodeAt(i);
+    }
+
+    zip.file("skin.png", binaryData);
+
+
+    const mcpackBlob = await zip.generateAsync({type: 'blob'});
+    const mcpackURL = URL.createObjectURL(mcpackBlob);
+
+    const a = document.createElement('a');
+    a.href = mcpackURL;
+    a.download = `skin_${new Date().getTime()}.mcpack`;
+    a.click();
+
+
+    URL.revokeObjectURL(mcpackURL);
+
+
+    const modal = bootstrap.Modal.getInstance($("#packModal"));
+    modal.hide();
+
+})
