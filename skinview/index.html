@@ -5,8 +5,8 @@
     <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
           name="viewport">
     <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <meta content="#FFFFFF" id="themeColor" name="theme-color"/>
     <meta content="zihao_il" name="author"/>
-    <meta content="#FFFFFF" name="theme-color">
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
     <link href="./manifest.json" rel="manifest"/>
     <link href="./img/favicon.ico" rel="icon" type="image/x-icon"/>
@@ -28,6 +28,13 @@
     <link href="./css/index.css" rel="stylesheet">
     <title>MC-3D皮肤预览</title>
     <style>
+        :root[data-bs-theme="dark"] {
+            color-scheme: dark;
+        }
+
+        :root[data-bs-theme="light"] {
+            color-scheme: light;
+        }
     </style>
 </head>
 <body>
@@ -468,8 +475,17 @@
                     <input class="form-check-input me-4" id="disable_follow"
                            type="checkbox">
                     <label class="col-form-label me-2" for="hidden_stats">隐藏左上角监视器：</label>
-                    <input class="form-check-input" id="hidden_stats"
+                    <input class="form-check-input me-4" id="hidden_stats"
                            type="checkbox">
+                </div>
+
+                <div class="d-flex align-items-center mb-3">
+                    <label class="col-form-label me-2" for="themeMode">主题：</label>
+                    <select class="form-select w-auto" id="themeMode">
+                        <option selected value="auto">自动</option>
+                        <option value="light">亮色</option>
+                        <option value="dark">暗色</option>
+                    </select>
                 </div>
 
             </div>

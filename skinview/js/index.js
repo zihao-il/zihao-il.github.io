@@ -553,3 +553,45 @@ $("#zip_btn").on("click", async function () {
     modal.hide();
 
 })
+
+
+$("#themeMode").on("change", function () {
+    localStorage.setItem("skin-color-scheme", $(this).val());
+    applyTheme($(this).val());
+
+});
+
+const updateThemeColor = (theme) => {
+    if (theme === 'dark') {
+        $('#themeColor').attr('content', '#212529');
+    } else {
+        $('#themeColor').attr('content', '#FFFFFF');
+    }
+}
+
+const applyTheme = (theme) => {
+    if (theme === 'light' || theme === 'dark') {
+        $('html').attr('data-bs-theme', theme);
+        updateThemeColor(theme);
+    } else if (theme === 'auto') {
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        $('html').attr('data-bs-theme', systemTheme);
+        updateThemeColor(systemTheme);
+    }
+}
+
+
+$(document).ready(function () {
+
+    const storedTheme = localStorage.getItem('skin-color-scheme');
+    applyTheme(storedTheme);
+    $("#themeMode").val(storedTheme);
+    if (storedTheme) {
+        applyTheme(storedTheme);
+    } else {
+        localStorage.setItem('skin-color-scheme', 'auto');
+        applyTheme('auto');
+    }
+
+});
+
