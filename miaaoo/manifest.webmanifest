@@ -1,0 +1,16 @@
+{
+  "name": "Minecraft基岩版線上多人遊戲列表",
+  "short_name": "Minecraft基岩版線上多人遊戲列表",
+  "start_url": ".",
+  "description": "Minecraft基岩版線上多人遊戲列表",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "256x256",
+      "type": "image/ico"
+    }
+  ]
+}
