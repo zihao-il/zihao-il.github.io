@@ -109,6 +109,7 @@ $("#skin_be_get_btn").on("click", function () {
                 showModalMessage(result.message);
             } else {
                 $('#be-skin-img').attr('src', `https://persona-secondary.franchise.minecraft-services.net/api/v1.0/profile/xuid/${result.profileUsers[0].id}/image/avatar`);
+                $('#beSkinModal').modal('show');
             }
         },
         error: function (xhr, status, error) {
