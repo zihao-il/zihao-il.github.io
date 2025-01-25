@@ -77,11 +77,7 @@ $("#skin_get_btn").on("click", function () {
         dataType: 'json',
         success: function (result) {
             if (result.status === 201) {
-                $(".alert-text").text(result.message)
-                $('#skin_modal').modal('show');
-                setTimeout(function () {
-                    $('#skin_modal').modal('hide');
-                }, 2000); // 设置两秒后自动关闭
+                showModalMessage(result.message);
             } else {
                 skinViewer.loadSkin(result.skin, {})
                 if (result.hasOwnProperty('cape')) {
@@ -100,7 +96,37 @@ $("#skin_get_btn").on("click", function () {
     });
 });
 
+$("#skin_be_get_btn").on("click", function () {
+    $.ajax({
+        url: 'https://bbk.endyun.ltd/api/xbox_avatar',
+        type: 'POST',
+        data: {gt: $("#skin_name").val()},
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+        dataType: 'json',
+        success: function (result) {
 
+            if (result.status === 201) {
+                showModalMessage(result.message);
+            } else {
+                $('#be-skin-img').attr('src', `https://persona-secondary.franchise.minecraft-services.net/api/v1.0/profile/xuid/${result.profileUsers[0].id}/image/avatar`);
+            }
+        },
+        error: function (xhr, status, error) {
+            $(".alert-text").text("API请求失败！")
+            $('#skin_modal').modal('show');
+            setTimeout(function () {
+                $('#skin_modal').modal('hide');
+            }, 2000);
+        }
+    });
+});
+const showModalMessage = (message, timeout = 2000) => {
+    $(".alert-text").text(message);
+    $('#skin_modal').modal('show');
+    setTimeout(() => {
+        $('#skin_modal').modal('hide');
+    }, timeout);
+}
 // 选择披风功能
 $("#cape").on("change", function () {
     if ($("#cape").val() === "") {

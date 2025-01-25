@@ -93,6 +93,9 @@
                     <input class="form-control flex-grow-1 me-1" id="skin_name" type="text">
                     <button class="btn btn-outline-primary flex-shrink-0" id="skin_get_btn" type="button">窃取皮肤
                     </button>
+                    <button class="btn btn-outline-primary flex-shrink-0 skin-be-btn" data-bs-target="#beSkinModal" data-bs-toggle="modal"
+                            id="skin_be_get_btn" type="button">BE皮肤
+                    </button>
                 </div>
 
 
@@ -528,8 +531,8 @@
 </div>
 
 
-<div aria-hidden="true" aria-labelledby="packModalLabel" class="modal fade  pack-modal" data-bs-backdrop="static"
-     data-bs-keyboard="false" id="packModal" tabindex="99999">
+<div aria-hidden="true" aria-labelledby="packModalLabel" class="modal fade pack-modal" data-bs-backdrop="static"
+     data-bs-keyboard="false" id="packModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header skin-modal-header">
@@ -556,6 +559,17 @@
         </div>
     </div>
 </div>
+
+<div aria-hidden="true" aria-labelledby="beSkinModal" class="modal fade" id="beSkinModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <img alt="查询不到此用户的皮肤" class="img-fluid" id="be-skin-img" src="">
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script src="./js/index.js"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.min.js"></script>

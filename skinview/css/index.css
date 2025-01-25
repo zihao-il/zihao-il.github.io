@@ -58,7 +58,7 @@ section {
 }
 
 .skin-dialog {
-    z-index: 9999;
+    z-index: 99999;
     display: flex;
     align-items: end;
     justify-content: center;
@@ -79,4 +79,12 @@ section {
 
 .attach-title {
     padding-top: 0.5em;
+}
+
+.skin-be-btn {
+    margin-left: 0.5em;
+}
+
+#skin_modal, #beSkinModal, #packModal {
+    z-index: 99999;
 }
