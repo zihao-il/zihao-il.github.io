@@ -622,3 +622,14 @@ $(document).ready(function () {
 
 });
 
+function googleTranslateElementInit() {
+    new google.translate.TranslateElement({pageLanguage: 'zh-CN'}, 'google_translate_element');
+}
+
+$("#language").on("change", function () {
+    let select = document.querySelector(".goog-te-combo");
+    if (select) {
+        select.value = $(this).val();
+        select.dispatchEvent(new Event("change"));
+    }
+});
