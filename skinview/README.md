@@ -5,6 +5,7 @@
 ### [skin.endyun.ltd](https://skin.endyun.ltd/)
 
 ### [skinview.pages.dev(备用)](https://skinview.pages.dev/)
+### [skinview.netlify.app(备用)](https://skinview.netlify.app/)
 
 ## 说明
 
