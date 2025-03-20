@@ -294,14 +294,15 @@ function checkClassicSkin(ctx) {
 }
 
 function initCoatShawl() {
-    $("input[name='shawl']#shawl_none").prop("checked", true);
-    $("input[name='coat']#coat_none").prop("checked", true);
+    $('#coat').val('');
+    $('#shawl').val('');
     old_skin = ""
 }
 
-$("input[name='coat']").on("change", function () {
-    if ($("input[name='shawl']:checked").val() !== "") {
-        $("input[name='shawl']#shawl_none").prop("checked", true);
+
+$("#coat").on("change", function () {
+    if ($("#shawl").val() !== "") {
+        $('#shawl').val('');
         skinViewer.loadSkin(old_skin, {
             model: $("#skin_model").val()
         })
@@ -316,12 +317,12 @@ $("input[name='coat']").on("change", function () {
         old_skin = ""
 
     }
-
 });
 
-$("input[name='shawl']").on("change", function () {
-    if ($("input[name='coat']:checked").val() !== "") {
-        $("input[name='coat']#coat_none").prop("checked", true);
+
+$("#shawl").on("change", function () {
+    if ($('#coat').val() !== "") {
+        $('#coat').val('');
         skinViewer.loadSkin(old_skin, {
             model: $("#skin_model").val()
         })
