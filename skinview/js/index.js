@@ -273,19 +273,26 @@ const AddDecoration = async function (name, cs, model) {
 
 // 判断皮肤手臂粗细
 function checkClassicSkin(ctx) {
-    const classicArmWidth = 4;
-    const slimArmWidth = 3;
+    const {width, height} = ctx.canvas;
+    console.log(width)
 
-    const armX = 44;
-    const armY = 52;
+    const scale = width / 64;
 
-    const classicPixels = ctx.getImageData(armX, armY, classicArmWidth, 12).data;
-    const slimPixels = ctx.getImageData(armX, armY, slimArmWidth, 12).data;
+    const classicArmWidth = 4 * scale;
+    const slimArmWidth = 3 * scale;
+
+    const armX = 44 * scale;
+    const armY = 52 * scale;
+
+    const classicPixels = ctx.getImageData(armX, armY, classicArmWidth, 12 * scale).data;
+    const slimPixels = ctx.getImageData(armX, armY, slimArmWidth, 12 * scale).data;
 
     let classicOpaque = 0, slimOpaque = 0;
+
     for (let i = 3; i < classicPixels.length; i += 4) {
         if (classicPixels[i] === 255) classicOpaque++;
     }
+
     for (let i = 3; i < slimPixels.length; i += 4) {
         if (slimPixels[i] === 255) slimOpaque++;
     }
@@ -541,8 +548,12 @@ $("#zip_btn").on("click", async function () {
     let tempContext = tempCanvas.getContext('2d', {willReadFrequently: true});
     tempContext.drawImage(skinImg, 0, 0);
 
-    const isClassic = checkClassicSkin(tempContext);
-    model = isClassic ? "default" : "slim";
+    if ($("#skin_model").val() === "auto-detect") {
+        const isClassic = checkClassicSkin(tempContext);
+        model = isClassic ? "default" : "slim";
+    } else {
+        model = $("#skin_model").val();
+    }
 
     let name = $("#pack_name").val() || "我的皮肤包";
     let nickName = $("#pack_skin_name").val() || "史蒂夫";
