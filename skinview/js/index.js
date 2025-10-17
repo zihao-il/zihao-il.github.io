@@ -109,7 +109,7 @@ $("#skin_be_get_btn").on("click", function () {
     }
     $('#beSkinModal').modal('show');
     $.ajax({
-        url: 'https://bbk.endyun.ltd/api/xbox_avatar',
+        url: 'https://bbk.endyu.ltd/api/xbox_avatar',
         type: 'POST',
         data: {gt: gamerTag},
         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -127,9 +127,7 @@ $("#skin_be_get_btn").on("click", function () {
         },
         error: function (xhr, status, error) {
             $img.attr('alt', '查询失败');
-            $(".alert-text").text("API请求失败！")
-            $('#skin_modal').modal('show');
-            setTimeout(() => $('#skin_modal').modal('hide'), 2000);
+            showModalMessage('API请求失败');
         }
     });
 });
