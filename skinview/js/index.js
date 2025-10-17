@@ -87,11 +87,7 @@ $("#skin_get_btn").on("click", function () {
             }
         },
         error: function (xhr, status, error) {
-            $(".alert-text").text("API请求失败！")
-            $('#skin_modal').modal('show');
-            setTimeout(function () {
-                $('#skin_modal').modal('hide');
-            }, 2000);
+            showModalMessage('API请求失败');
         }
     });
 });
