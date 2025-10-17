@@ -97,30 +97,43 @@ $("#skin_get_btn").on("click", function () {
 });
 
 $("#skin_be_get_btn").on("click", function () {
+    const $img = $('#be-skin-img');
+    const gamerTag = $("#skin_name").val().trim();
+    $img.attr({
+        src: '',
+        alt: '查询中...'
+    });
+    if (!gamerTag) {
+        showModalMessage("请输入玩家名称！");
+        return;
+    }
+    $('#beSkinModal').modal('show');
     $.ajax({
-        url: 'https://bbk.endyun.ltd/api/xbox_avatar',
+        url: 'https://bbk.endyu.ltd/api/xbox_avatar',
         type: 'POST',
-        data: {gt: $("#skin_name").val()},
+        data: {gt: gamerTag},
         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
         dataType: 'json',
         success: function (result) {
-
             if (result.status === 201) {
+                $img.attr('alt', '查询不到此用户的皮肤');
                 showModalMessage(result.message);
             } else {
-                $('#be-skin-img').attr('src', `https://persona-secondary.franchise.minecraft-services.net/api/v1.0/profile/xuid/${result.profileUsers[0].id}/image/avatar`);
-                $('#beSkinModal').modal('show');
+                $img.attr({
+                    src: `https://persona-secondary.franchise.minecraft-services.net/api/v1.0/profile/xuid/${result.profileUsers[0].id}/image/avatar`,
+                    alt: `${gamerTag} 的立体皮肤`
+                });
             }
         },
         error: function (xhr, status, error) {
+            $img.attr('alt', '查询失败');
             $(".alert-text").text("API请求失败！")
             $('#skin_modal').modal('show');
-            setTimeout(function () {
-                $('#skin_modal').modal('hide');
-            }, 2000);
+            setTimeout(() => $('#skin_modal').modal('hide'), 2000);
         }
     });
 });
+
 const showModalMessage = (message, timeout = 2000) => {
     $(".alert-text").text(message);
     $('#skin_modal').modal('show');
