@@ -109,7 +109,7 @@ $("#skin_be_get_btn").on("click", function () {
     }
     $('#beSkinModal').modal('show');
     $.ajax({
-        url: 'https://bbk.endyu.ltd/api/xbox_avatar',
+        url: 'https://bbk.endyun.ltd/api/xbox_avatar',
         type: 'POST',
         data: {gt: gamerTag},
         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
