@@ -693,6 +693,7 @@ $("#mcpack_input").on("change", async function (e) {
             const blob = await skinFile.async("blob");
             const skinURL = URL.createObjectURL(blob);
             const skinName = skin.localization_name;
+            const skinModel = skin.geometry === "geometry.humanoid.customSlim" ? "slim" : "default";
             let canvasId = "skin_container_" + index;
             $("#mcpackModal .modal-body").append(`<div style="width: 85%;margin: 0 auto;"><p>${skinName}：</p><canvas id="${canvasId}"></canvas></div>`);
             let skinViewer = new skinview3d.SkinViewer({
@@ -700,9 +701,10 @@ $("#mcpack_input").on("change", async function (e) {
                 width: modalBodyWidth * 0.85,
                 height: 250,
                 skin: skinURL,
-                enableControls: true
+                enableControls: true,
+                model: skinModel,
             });
-            // 细皮判断，多语言单选切换
+            // 多语言单选切换
         }
     });
 
