@@ -654,7 +654,6 @@ $("#language").on("change", function () {
 
 
 $("#mcpack_input").on("change", async function (e) {
-    console.log(e.target.files[0])
     const file = e.target.files[0];
     const zip = await JSZip.loadAsync(file);
     const manifestFile = zip.file("manifest.json");
@@ -674,32 +673,38 @@ $("#mcpack_input").on("change", async function (e) {
         showModalMessage('未找到 skins.json文件')
         return;
     }
-    $('#mcpackModal').modal('show');
     const skinsJsonText = await skinsJsonFile.async("string");
     const skinsData = JSON.parse(skinsJsonText);
-    const skinName = skinsData.localization_name;
-    $("#mcpackModal .modal-title").text(skinName);
+    const skinPackName = skinsData.localization_name || "皮肤包";
 
-    for (const [index, skin] of skinsData.skins.entries()) {
-        const skinPath = skin.texture;
-        const skinFile = zip.file(skinPath);
-        const blob = await skinFile.async("blob");
-        const skinURL = URL.createObjectURL(blob);
-        const skinName = skin.localization_name;
-        let canvasId = "skin_container_" + index;
-        $("#mcpackModal .modal-body").append(`<div>${skinName}<canvas id="${canvasId}"></canvas></div>`);
-
-        let skinViewer = new skinview3d.SkinViewer({
-            canvas: $("#" + canvasId)[0],
-            width: $("#mcpackModal .modal-body").width() || 400,
-            height: 250,
-            skin: skinURL,
-            enableControls: true
-        });
+    $("#mcpackModal .modal-title").text(skinPackName);
+    $("#mcpackModal .modal-body").empty();
+    $('#mcpackModal').modal('show');
 
 
-    }
+    $('#mcpackModal').off('shown.bs.modal').on('shown.bs.modal', async function () {
+        const modalBodyWidth = $("#mcpackModal .modal-body").width() || 400;
 
+    
+        for (const [index, skin] of skinsData.skins.entries()) {
+            
+            const skinPath = skin.texture;
+            const skinFile = zip.file(skinPath);
+            const blob = await skinFile.async("blob");
+            const skinURL = URL.createObjectURL(blob);
+            const skinName = skin.localization_name;
+            let canvasId = "skin_container_" + index;
+            $("#mcpackModal .modal-body").append(`<div style="width: 85%;margin: 0 auto;"><p>${skinName}：</p><canvas id="${canvasId}"></canvas></div>`);
+            let skinViewer = new skinview3d.SkinViewer({
+                canvas: $("#" + canvasId)[0],
+                width: modalBodyWidth * 0.85,
+                height: 250,
+                skin: skinURL,
+                enableControls: true
+            });
+            
+        }
+    });
 
 });
 
