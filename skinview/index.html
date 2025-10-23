@@ -91,8 +91,8 @@
                     <button class="btn btn-outline-danger" id="skin_clear_btn" type="button">清除</button>
                 </div>
 <!--                <div class="input-group mb-3">-->
-<!--                    <input accept=".mcpack" class="form-control" id="mcpack_input" size="1048576" type="file">-->
-<!--                    <button class="btn btn-outline-danger" id="mcpack_input_btn" type="button">清除</button>-->
+<!--                    <label class="input-group-text" for="mcpack_input">查看皮肤包</label>-->
+<!--                    <input accept=".mcpack" class="form-control" id="mcpack_input" size="15728640" type="file">-->
 <!--                </div>-->
                 <div class="d-flex align-items-center mb-3">
                     <label class="col-form-label me-1 flex-shrink-0" for="skin_name">用户名：</label>
@@ -514,6 +514,24 @@
         <div class="modal-content">
             <div class="modal-body text-center">
                 <img alt="查询不到此用户的皮肤" class="img-fluid" id="be-skin-img" src="">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div aria-hidden="true" aria-labelledby="mcpackModalLabel" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false"
+     id="mcpackModal" style="z-index: 9999" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="mcpackModalLabel"></h1>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="mcpackModalClose" data-bs-dismiss="modal" type="button">关闭</button>
             </div>
         </div>
     </div>
