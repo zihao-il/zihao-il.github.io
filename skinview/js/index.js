@@ -702,7 +702,7 @@ $("#mcpack_input").on("change", async function (e) {
                 skin: skinURL,
                 enableControls: true
             });
-            
+            // 细皮判断，多语言单选切换
         }
     });
 

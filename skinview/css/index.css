@@ -88,3 +88,9 @@ section {
 #skin_modal, #beSkinModal, #packModal {
     z-index: 99999;
 }
+
+.mcpack-text-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis
+}
