@@ -652,3 +652,30 @@ $("#language").on("change", function () {
         select.dispatchEvent(new Event("change"));
     }
 });
+
+
+$("#mcpack_input").on("change", async function (e) {
+    const file = e.target.files[0];
+    const zip = await JSZip.loadAsync(file);
+    const manifestFile = zip.file("manifest.json");
+    if (!manifestFile) {
+        showModalMessage("请上传正确的mcpack文件");
+        return;
+    }
+    const manifestText = await manifestFile.async("string");
+    const manifestData = JSON.parse(manifestText);
+    const isSkinPack = manifestData.modules?.some((m) => m.type === "skin_pack");
+    if (!isSkinPack) {
+        showModalMessage("不是皮肤包类型文件");
+        return;
+    }
+    const skinsJsonFile = zip.file("skins.json");
+    if (!skinsJsonFile) {
+        alert('未找到 skins.json文件')
+        return;
+    }
+
+
+
+
+});
