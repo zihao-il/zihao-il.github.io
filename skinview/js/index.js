@@ -505,22 +505,26 @@ const generateManifest = (name) => {
     }, null, 4);
 }
 
-const generateSkins = (name, skinData) => {
+const generateSkins = (name, skinData, armor) => {
 
+    const skin = {
+        "localization_name": "skin",
+        "geometry": skinData === "default"
+            ? "geometry.humanoid.custom"
+            : "geometry.humanoid.customSlim",
+        "texture": "skin.png",
+        "type": "free"
+    }
+    if (armor) {
+        skin.enable_attachables = false
+    }
+    
     return JSON.stringify({
-        "skins": [
-            {
-                "localization_name": "skin",
-                "geometry": skinData === "default"
-                    ? "geometry.humanoid.custom"
-                    : "geometry.humanoid.customSlim",
-                "texture": "skin.png",
-                "type": "free"
-            },
-        ],
+        "skins": [skin],
         "serialize_name": `${name}`,
         "localization_name": `${name}`
-    }, null, 4);
+    }, null, 4)
+
 }
 
 const generateLang = (name, nickName) => {
@@ -563,11 +567,12 @@ $("#zip_btn").on("click", async function () {
 
     let name = $("#pack_name").val() || "我的皮肤包";
     let nickName = $("#pack_skin_name").val() || "史蒂夫";
-
+    let hiddenArmor = $("#hidden_armor").is(":checked");
+    
     const zip = new JSZip();
 
     zip.file("manifest.json", generateManifest(name));
-    zip.file("skins.json", generateSkins(name, model));
+    zip.file("skins.json", generateSkins(name, model, hiddenArmor));
     zip.file("texts/zh_CN.lang", generateLang(name, nickName));
 
 
@@ -685,9 +690,9 @@ $("#mcpack_input").on("change", async function (e) {
     $('#mcpackModal').off('shown.bs.modal').on('shown.bs.modal', async function () {
         const modalBodyWidth = $("#mcpackModal .modal-body").width() || 400;
 
-    
+
         for (const [index, skin] of skinsData.skins.entries()) {
-            
+
             const skinPath = skin.texture;
             const skinFile = zip.file(skinPath);
             const blob = await skinFile.async("blob");
@@ -704,7 +709,7 @@ $("#mcpack_input").on("change", async function (e) {
                 enableControls: true,
                 model: skinModel,
             });
-            // 多语言单选切换
+            // 多语言单选切换,单个皮肤管理或者统一管理
         }
     });
 
