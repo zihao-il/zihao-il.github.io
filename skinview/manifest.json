@@ -2,7 +2,7 @@
   "name": "MC-3D皮肤预览",
   "short_name": "MC-3D皮肤预览",
   "description": "Minecraft-3D皮肤预览",
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "icons": [
