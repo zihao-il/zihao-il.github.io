@@ -1313,16 +1313,31 @@
             const arrayBuffer = await file.arrayBuffer();
             const u8 = new Uint8Array(arrayBuffer);
 
-            let topEntries = await parseArchiveEntries(u8);
-            if (!topEntries || topEntries.length === 0) {
+            let entries = await parseArchiveEntries(u8);
+            if (!entries || entries.length === 0) {
                 showToast("错误: 无法解析该压缩包!", "error");
                 return;
             }
 
-            let expanded = await recursivelyUnpackEntries(topEntries, 0);
-            expanded = stripCommonRootFolder(expanded);
+            // Strip a common single root folder ONLY if it's not __brarchive
+            if (entries.length > 0) {
+                const firstPath = entries[0].name.replace(/\\/g, '/');
+                if (firstPath.includes('/')) {
+                    const rootFolder = firstPath.split('/')[0];
+                    if (rootFolder.toLowerCase() !== '__brarchive') {
+                        const prefix = rootFolder + '/';
+                        const allShareRoot = entries.every(f => f.name.replace(/\\/g, '/').startsWith(prefix));
+                        if (allShareRoot) {
+                            entries = entries.map(f => ({
+                                ...f,
+                                name: f.name.replace(/\\/g, '/').substring(prefix.length)
+                            }));
+                        }
+                    }
+                }
+            }
 
-            expanded.forEach(entry => {
+            entries.forEach(entry => {
                 packFileList.push({
                     id: Math.random().toString(36).substring(2, 9),
                     name: entry.name,
@@ -1337,7 +1352,7 @@
             }
 
             updatePackUI();
-            showToast(t('toastZipImportSuccess', {count: expanded.length}), 'success');
+            showToast(t('toastZipImportSuccess', {count: entries.length}), 'success');
         } catch (err) {
             console.error(err);
             showToast("压缩包导入错误: " + err.message, 'error');
@@ -1542,10 +1557,14 @@
         const hasFolders = packFileList.some(f => f.name.replace(/\\/g, '/').includes('/'));
 
         if (lowerName.endsWith('.zip') || lowerName.endsWith('.mcpack') || lowerName.endsWith('.mcaddon') || hasFolders) {
-            // Build ZIP: inner folders -> .brarchive, root files -> kept untouched outside
+            // Build ZIP:
+            // Each top-level folder (or subfolder inside __brarchive) is packed into
+            // a .brarchive file placed at the same container path in the output ZIP.
+            // Root-level files (no folder) are placed untouched at the ZIP root.
             showToast(t('toastZipExporting'), 'info');
             const zip = new JSZip();
 
+            // key: "containerPath/folderName" → array of { name, content }
             const folderGroups = {};
             const rootFiles = [];
 
@@ -1553,13 +1572,26 @@
                 const path = file.name.replace(/\\/g, '/');
                 if (path.includes('/')) {
                     const parts = path.split('/');
-                    const folderName = parts[0];
-                    const innerPath = parts.slice(1).join('/');
-                    if (innerPath) {
-                        if (!folderGroups[folderName]) {
-                            folderGroups[folderName] = [];
+
+                    let containerPath, folderName, innerPath;
+                    if (parts[0].toLowerCase() === '__brarchive' && parts.length >= 3) {
+                        // path = __brarchive/<subFolder>/<innerPath...>
+                        containerPath = parts[0];   // "__brarchive"
+                        folderName = parts[1];
+                        innerPath = parts.slice(2).join('/');
+                    } else {
+                        // path = <topFolder>/<innerPath...>
+                        containerPath = '';
+                        folderName = parts[0];
+                        innerPath = parts.slice(1).join('/');
+                    }
+
+                    const groupKey = containerPath ? `${containerPath}/${folderName}` : folderName;
+                    if (folderName && innerPath) {
+                        if (!folderGroups[groupKey]) {
+                            folderGroups[groupKey] = { containerPath, folderName, files: [] };
                         }
-                        folderGroups[folderName].push({
+                        folderGroups[groupKey].files.push({
                             name: innerPath,
                             content: file.content
                         });
@@ -1569,13 +1601,16 @@
                 }
             });
 
-            // Pack each top-level folder into its own .brarchive
-            for (const [folderName, files] of Object.entries(folderGroups)) {
-                const brBuffer = writeBrArchive(files);
-                zip.file(`${folderName}.brarchive`, brBuffer);
+            // Pack each subfolder into its own .brarchive, placed at the correct container path
+            for (const [, group] of Object.entries(folderGroups)) {
+                const brBuffer = writeBrArchive(group.files);
+                const outputPath = group.containerPath
+                    ? `${group.containerPath}/${group.folderName}.brarchive`
+                    : `${group.folderName}.brarchive`;
+                zip.file(outputPath, brBuffer);
             }
 
-            // Root files stay untouched outside
+            // Root files stay untouched at ZIP root
             rootFiles.forEach(file => {
                 zip.file(file.name, file.content);
             });
