@@ -1,0 +1,1469 @@
+<html data-bs-theme="dark" lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+          name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <title data-i18n="appTitle">BrArchive加解包工具</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --mc-green: #2ECC71;
+            --mc-green-hover: #27AE60;
+            --mc-dark-bg: #121418;
+            --mc-card-bg: rgba(26, 30, 38, 0.85);
+            --mc-border: rgba(255, 255, 255, 0.12);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            color: #E6EDF3;
+            background: radial-gradient(circle at top right, #1B2838 0%, #0D1117 50%, #080A0F 100%) fixed;
+        }
+
+        .navbar {
+            border-bottom: 1px solid var(--mc-border);
+            background: rgba(18, 20, 24, 0.85) !important;
+            backdrop-filter: blur(12px);
+        }
+
+        .brand-logo {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #58A6FF 0%, #3FB950 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glass-card {
+            transition: border-color 0.2s ease;
+            border: 1px solid var(--mc-border);
+            border-radius: 12px;
+            background: var(--mc-card-bg);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            backdrop-filter: blur(16px);
+        }
+
+        /* Mode Selector Tab Switcher */
+        .mode-switch-wrapper {
+            display: inline-flex;
+            max-width: 100%;
+            padding: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 14px;
+            background: rgba(13, 17, 23, 0.85);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            gap: 12px;
+        }
+
+        .mode-tab-btn {
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            padding: 0.6rem 1.4rem;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            color: #A3B8CC;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 10px !important;
+            background: rgba(255, 255, 255, 0.05);
+            gap: 0.5rem;
+        }
+
+        .mode-tab-btn:hover:not(.active) {
+            color: #FFFFFF;
+            border-color: rgba(255, 255, 255, 0.25) !important;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .mode-tab-btn.active {
+            color: #FFFFFF !important;
+            border-color: #3FB950 !important;
+            background: linear-gradient(135deg, #238636 0%, #2EA043 100%) !important;
+            box-shadow: 0 4px 16px rgba(35, 134, 54, 0.45);
+        }
+
+        .dropzone {
+            padding: 2.5rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            border: 2px dashed rgba(88, 166, 255, 0.4);
+            border-radius: 12px;
+            background: rgba(22, 27, 34, 0.5);
+        }
+
+        .dropzone:hover,
+        .dropzone.dragover {
+            transform: translateY(-2px);
+            border-color: #58A6FF;
+            background: rgba(56, 139, 253, 0.12);
+        }
+
+        .dropzone-icon {
+            font-size: 3rem;
+            margin-bottom: 0.75rem;
+            transition: transform 0.2s ease;
+            color: #58A6FF;
+        }
+
+        .dropzone:hover .dropzone-icon {
+            transform: scale(1.1);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 500px;
+            border-radius: 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-custom {
+            font-size: 0.9rem;
+            width: 100%;
+            vertical-align: middle;
+            --bs-table-bg: transparent;
+            --bs-table-color: #C9D1D9;
+        }
+
+        .table-custom th {
+            font-size: 0.75rem;
+            font-weight: 600;
+            position: sticky;
+            z-index: 10;
+            top: 0;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #8B949E;
+            border-bottom: 1px solid var(--mc-border);
+            background: rgba(13, 17, 23, 0.95);
+        }
+
+        .table-custom td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .table-custom tr:hover td {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .cell-path {
+            min-width: 140px;
+            max-width: 420px;
+        }
+
+        .file-path-text {
+            font-size: 0.85rem;
+            line-height: 1.3;
+            white-space: normal;
+            word-break: break-all;
+            overflow-wrap: anywhere;
+        }
+
+        .code-preview {
+            font-size: 0.85rem;
+            overflow: auto;
+            max-height: 450px;
+            padding: 1rem;
+            color: #E6EDF3;
+            border: 1px solid var(--mc-border);
+            border-radius: 8px;
+            background: #0D1117;
+        }
+
+        .hex-dump {
+            font-size: 0.8rem;
+            line-height: 1.4;
+            white-space: pre;
+        }
+
+        .badge-extension {
+
+            font-size: 0.7rem;
+            padding: 0.25em 0.5em;
+        }
+
+        .search-input {
+            color: #E6EDF3;
+            border: 1px solid var(--mc-border);
+            background: rgba(13, 17, 23, 0.8);
+        }
+
+        .search-input:focus {
+            color: #FFFFFF;
+            border-color: #58A6FF;
+            background: rgba(22, 27, 34, 0.9);
+            box-shadow: 0 0 0 0.25rem rgba(56, 139, 253, 0.25);
+        }
+
+        .btn-mc-success {
+            font-weight: 500;
+            color: #FFFFFF;
+            border-color: #2EA043;
+            background-color: #238636;
+        }
+
+        .btn-mc-success:hover {
+            color: #FFFFFF;
+            border-color: #3FB950;
+            background-color: #2EA043;
+        }
+
+        .stat-box {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--mc-border);
+            border-radius: 8px;
+            background: rgba(13, 17, 23, 0.6);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            color: #8B949E;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #58A6FF;
+        }
+
+        /* Mobile Responsive Optimizations */
+        @media (max-width: 576px) {
+            .mode-switch-wrapper {
+                padding: 4px;
+                gap: 8px;
+            }
+
+            .mode-tab-btn {
+                font-size: 0.85rem;
+                padding: 0.5rem 0.8rem;
+            }
+
+            .cell-path {
+                min-width: 120px;
+                max-width: 180px;
+            }
+
+            .table-custom {
+                font-size: 0.8rem;
+            }
+
+            .table-custom th,
+            .table-custom td {
+                padding: 0.4rem 0.3rem;
+            }
+
+            .stat-box {
+                padding: 0.5rem 0.5rem;
+            }
+
+            .stat-value {
+                font-size: 0.9rem;
+            }
+
+            .stat-label {
+                font-size: 0.68rem;
+            }
+
+            .glass-card {
+                padding: 1rem !important;
+            }
+
+            .dropzone {
+                padding: 1.5rem 0.75rem;
+            }
+        }
+
+        /* Scrollbar customization */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(13, 17, 23, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            border-radius: 4px;
+            background: rgba(110, 118, 129, 0.4);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(140, 149, 159, 0.6);
+        }
+    </style>
+</head>
+
+<body>
+<!-- Navigation Header -->
+<nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container-fluid px-3 px-md-4">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+            <i class="bi bi-box-seam-fill text-success fs-4"></i>
+            <span class="brand-logo fs-5">BrArchive Manager</span>
+        </a>
+
+        <div class="d-flex align-items-center gap-2">
+            <!-- Language Switcher -->
+            <div class="dropdown">
+                <button
+                        aria-expanded="false"
+                        class="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-2"
+                        data-bs-toggle="dropdown" id="langDropdown" type="button">
+                    <i class="bi bi-translate"></i>
+                    <span id="currentLangLabel">中文</span>
+                </button>
+                <ul aria-labelledby="langDropdown"
+                    class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
+                    <li><a class="dropdown-item active" href="#" onclick="setLanguage('zh')">简体中文</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">English</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Container -->
+<main class="container py-3 py-md-4">
+    <!-- Header Banner -->
+    <div class="text-center mb-3 mb-md-4">
+        <h1 class="h3 fw-bold mb-2" data-i18n="mainHeader">MCBE BrArchive格式文件打包/解包工具
+        </h1>
+        <p class="text-secondary small mb-0" data-i18n="subHeader">支持在线解包、快速查看、编辑与打包 .brarchive, .mcpack,
+            .mcaddon 格式文件</p>
+    </div>
+
+    <!-- Clear Segmented Mode Switcher (Mode Tabs) -->
+    <div class="d-flex justify-content-center mb-4">
+        <div class="mode-switch-wrapper" role="tablist">
+            <button aria-controls="unpack-pane" aria-selected="true" class="mode-tab-btn active"
+                    data-bs-target="#unpack-pane" data-bs-toggle="tab" id="unpack-tab" role="tab"
+                    type="button">
+                <i class="bi bi-folder-symlink-fill fs-5"></i>
+                <span data-i18n="tabUnpack">解包文件</span>
+            </button>
+            <button aria-controls="pack-pane" aria-selected="false" class="mode-tab-btn" data-bs-target="#pack-pane"
+                    data-bs-toggle="tab" id="pack-tab" role="tab" type="button">
+                <i class="bi bi-file-earmark-zip-fill fs-5"></i>
+                <span data-i18n="tabPack">打包到BrArchive</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Tab Contents -->
+    <div class="tab-content" id="mainTabContent">
+
+        <!-- ================= UNPACK PANE ================= -->
+        <div class="tab-pane fade show active" id="unpack-pane" role="tabpanel">
+            <div class="glass-card p-3 p-md-4 mb-4">
+                <!-- Dropzone -->
+                <div class="dropzone mb-3" id="unpackDropzone">
+                    <i class="bi bi-cloud-arrow-up dropzone-icon"></i>
+                    <h5 class="fw-semibold mb-1" data-i18n="unpackDropTitle">拖拽 .brarchive / .mcpack /
+                        .mcaddon 文件到此处</h5>
+                    <p class="text-secondary small mb-3" data-i18n="unpackDropSub">或者点击选择本地文件</p>
+                    <button class="btn btn-primary btn-sm px-4"
+                            onclick="document.getElementById('unpackFileInput').click()">
+                        <i class="bi bi-folder2-open me-1"></i> <span
+                            data-i18n="btnSelectFile">选择文件</span>
+                    </button>
+                    <input accept=".brarchive,.mcpack,.mcaddon,.zip" class="d-none" id="unpackFileInput"
+                           type="file">
+                </div>
+
+                <!-- Unpack Summary Statistics -->
+                <div class="d-none mb-3 mb-md-4" id="unpackStats">
+                    <div class="row g-2 g-md-3">
+                        <div class="col-6 col-md-3">
+                            <div class="stat-box">
+                                <div class="stat-label" data-i18n="statFileName">文件名称</div>
+                                <div class="stat-value text-truncate" id="statArchiveName">-</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="stat-box">
+                                <div class="stat-label" data-i18n="statArchiveSize">包总大小</div>
+                                <div class="stat-value" id="statArchiveSize">-</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="stat-box">
+                                <div class="stat-label" data-i18n="statFileCount">包含文件数</div>
+                                <div class="stat-value" id="statFileCount">-</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="stat-box">
+                                <div class="stat-label" data-i18n="statUncompressedSize">解压总大小
+                                </div>
+                                <div class="stat-value" id="statUncompressedSize">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls Bar -->
+                <div class="d-none" id="unpackControls">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                        <div class="input-group input-group-sm"
+                             style="max-width: 280px; flex: 1 1 180px;">
+                                                <span class="input-group-text bg-dark border-secondary text-secondary"><i
+                                                        class="bi bi-search"></i></span>
+                            <input class="form-control search-input" data-i18n-placeholder="phSearchFile"
+                                   id="unpackSearchInput" placeholder="搜索文件名..."
+                                   type="text">
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button
+                                    class="btn btn-mc-success btn-sm d-flex align-items-center gap-1"
+                                    id="btnDownloadZip" onclick="downloadAllAsZip()">
+                                <i class="bi bi-file-earmark-zip"></i>
+                                <span data-i18n="btnDownloadZip">打包导出为 ZIP</span>
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="resetUnpack()">
+                                <i class="bi bi-trash"></i>
+                                <span data-i18n="btnClear">清除</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Table of Extracted Files (Responsive) -->
+                    <div class="table-responsive table-container">
+                        <table class="table table-custom align-middle mb-0">
+                            <thead>
+                            <tr>
+                                <th style="width: 45px;">#</th>
+                                <th class="cell-path" data-i18n="thFileName">文件路径 / 名称</th>
+                                <th class="text-nowrap" data-i18n="thFileSize"
+                                    style="width: 90px;">大小
+                                </th>
+                                <th class="text-end text-nowrap" data-i18n="thActions"
+                                    style="width: 120px;">操作
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody id="unpackTableBody">
+                            <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- ================= PACK PANE ================= -->
+        <div class="tab-pane fade" id="pack-pane" role="tabpanel">
+            <div class="glass-card p-3 p-md-4 mb-4">
+                <!-- Dropzone -->
+                <div class="dropzone mb-3" id="packDropzone">
+                    <i class="bi bi-folder-plus dropzone-icon text-success"></i>
+                    <h5 class="fw-semibold mb-1" data-i18n="packDropTitle">拖拽文件、文件夹、ZIP、mcpack 或 mcaddon
+                        到此处</h5>
+                    <p class="text-secondary small mb-3" data-i18n="packDropSub">支持多文件、完整目录树或
+                        ZIP/mcpack/mcaddon 压缩包导入</p>
+
+                    <div class="d-flex justify-content-center flex-wrap gap-2">
+                        <button class="btn btn-primary btn-sm px-3"
+                                onclick="document.getElementById('packFilesInput').click()">
+                            <i class="bi bi-file-earmark-plus me-1"></i> <span
+                                data-i18n="btnAddFiles">添加文件</span>
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm px-3"
+                                onclick="document.getElementById('packFolderInput').click()">
+                            <i class="bi bi-folder-plus me-1"></i> <span
+                                data-i18n="btnAddFolder">添加文件夹</span>
+                        </button>
+                        <button class="btn btn-outline-info btn-sm px-3"
+                                onclick="document.getElementById('packZipInput').click()">
+                            <i class="bi bi-file-earmark-zip me-1"></i> <span
+                                data-i18n="btnImportZip">导入 ZIP / MCPACK / MCADDON</span>
+                        </button>
+                    </div>
+
+                    <!-- Hidden Inputs -->
+                    <input class="d-none" id="packFilesInput" multiple type="file">
+                    <input class="d-none" directory id="packFolderInput" multiple type="file"
+                           webkitdirectory>
+                    <input accept=".zip,.mcpack,.mcaddon" class="d-none" id="packZipInput" type="file">
+                </div>
+
+                <!-- Pack Controls & Options -->
+                <div class="d-none" id="packControls">
+                    <div class="row align-items-center g-2 g-md-3 mb-3">
+                        <div class="col-md-5">
+                            <div class="input-group input-group-sm">
+                                                      <span class="input-group-text bg-dark border-secondary text-secondary"
+                                                            data-i18n="lblOutputName">输出文件名</span>
+                                <input class="form-control search-input font-monospace" id="packOutputName"
+                                       type="text"
+                                       value="archive.brarchive">
+                            </div>
+                        </div>
+
+                        <div class="col-md-7 d-flex justify-content-md-end gap-2 flex-wrap">
+                            <button class="btn btn-outline-secondary btn-sm"
+                                    onclick="clearPackList()">
+                                <i class="bi bi-trash me-1"></i> <span
+                                    data-i18n="btnClearList">清空列表</span>
+                            </button>
+                            <button
+                                    class="btn btn-mc-success btn-sm px-3 d-flex align-items-center gap-1"
+                                    onclick="buildAndDownloadBrArchive()">
+                                <i class="bi bi-download"></i>
+                                <span data-i18n="btnBuildPack">生成并下载包文件</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- List Summary -->
+                    <div
+                            class="d-flex justify-content-between align-items-center mb-2 px-1 text-secondary small flex-wrap gap-1">
+                        <div>
+                            <span data-i18n="lblTotalItems">待打包项:</span> <strong class="text-light"
+                                                                                     id="packItemCount">0</strong> |
+                            <span data-i18n="lblEstSize">预计文件大小:</span> <strong class="text-light"
+                                                                                      id="packTotalSize">0 B</strong>
+                        </div>
+                        <div class="badge bg-warning text-dark d-none" id="packWarningBadge">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> <span
+                                data-i18n="warnLongName">发现超长文件名 (打包为 .brarchive
+                                                      时将被截断为247字节)</span>
+                        </div>
+                    </div>
+
+                    <!-- Table of Pending Files (Responsive) -->
+                    <div class="table-responsive table-container">
+                        <table class="table table-custom align-middle mb-0">
+                            <thead>
+                            <tr>
+                                <th style="width: 45px;">#</th>
+                                <th class="cell-path" data-i18n="thArcPath">包内相对路径 (直接编辑)
+                                </th>
+                                <th class="text-nowrap" data-i18n="thFileSize"
+                                    style="width: 90px;">大小
+                                </th>
+                                <th class="text-end text-nowrap" data-i18n="thActions"
+                                    style="width: 80px;">操作
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody id="packTableBody">
+                            <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- ================= PREVIEW MODAL ================= -->
+<div aria-hidden="true" class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark border-secondary text-light">
+            <div class="modal-header border-secondary py-2">
+                <h6 class="modal-title font-monospace text-truncate me-2" id="previewModalTitle">Preview
+                </h6>
+                <button aria-label="Close" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        type="button"></button>
+            </div>
+            <div class="modal-body text-center p-3" id="previewModalBody">
+                <!-- Image or Code or Hex inserted dynamically -->
+            </div>
+            <div class="modal-footer border-secondary py-2 justify-content-between">
+                <span class="small text-secondary font-monospace" id="previewModalInfo">0 bytes</span>
+                <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal"
+                        data-i18n="btnClose">关闭
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification Container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+    <div aria-atomic="true" aria-live="assertive" class="toast align-items-center text-bg-dark border-secondary"
+         id="appToast" role="alert">
+        <div class="d-flex">
+            <div class="toast-body d-flex align-items-center gap-2" id="toastMessage">
+                <i class="bi bi-info-circle text-info fs-5"></i> Message
+            </div>
+            <button aria-label="Close" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    type="button"></button>
+        </div>
+    </div>
+</div>
+
+<!-- External JS Dependencies -->
+<!-- JSZip -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Application Logic -->
+<script>
+    // =========================================================================
+    // I18N DICTIONARY & CONTROLLER
+    // =========================================================================
+    const I18N = {
+        zh: {
+            appTitle: "MCBE BrArchive加解包工具",
+            mainHeader: "MCBE BrArchive格式文件打包/解包工具",
+            subHeader: "支持在线解包、快速查看、编辑与打包 .brarchive, .mcpack, .mcaddon 格式文件",
+            tabUnpack: "解包文件",
+            tabPack: "打包到BrArchive",
+            unpackDropTitle: "拖拽 .brarchive / .mcpack / .mcaddon 文件到此处",
+            unpackDropSub: "或者点击选择本地文件",
+            btnSelectFile: "选择文件",
+            statFileName: "文件名称",
+            statArchiveSize: "包总大小",
+            statFileCount: "包含文件数",
+            statUncompressedSize: "解压总大小",
+            phSearchFile: "搜索文件名...",
+            btnDownloadZip: "打包导出为 ZIP",
+            btnClear: "清除",
+            thFileName: "文件路径 / 名称",
+            thFileSize: "大小",
+            thActions: "操作",
+            btnPreview: "预览",
+            btnDownload: "下载",
+            packDropTitle: "拖拽文件、文件夹、ZIP、mcpack 或 mcaddon 到此处",
+            packDropSub: "支持多文件、完整目录树或 ZIP/mcpack/mcaddon 压缩包导入",
+            btnAddFiles: "添加文件",
+            btnAddFolder: "添加文件夹",
+            btnImportZip: "导入 ZIP / MCPACK / MCADDON",
+            lblOutputName: "输出文件名",
+            btnClearList: "清空列表",
+            btnBuildPack: "生成并下载包文件",
+            lblTotalItems: "待打包项:",
+            lblEstSize: "预计文件大小:",
+            warnLongName: "包含超长文件名 (打包为 .brarchive 时将被截断为247字节)",
+            thArcPath: "包内相对路径 (直接编辑)",
+            btnRemove: "移除",
+            btnClose: "关闭",
+            toastInvalidBrArchive: "错误: 无法解析该文件 (不支持的格式或文件已损坏)!",
+            toastUnpackSuccess: "成功解包 {count} 个文件!",
+            toastZipExporting: "正在生成文件，请稍候...",
+            toastZipExportSuccess: "文件生成并开始下载!",
+            toastPackSuccess: "成功打包 {count} 个文件!",
+            toastNoFilesToPack: "警告: 请先添加需要打包的文件!",
+            toastZipImportSuccess: "成功导入压缩包中的 {count} 个文件!"
+        },
+        en: {
+            appTitle: "MCBE BrArchive Unpack/Pack Tool",
+            mainHeader: "Minecraft Bedrock Archive Tool",
+            subHeader: "Unpack, preview, edit, and build .brarchive, .mcpack, and .mcaddon files",
+            tabUnpack: "Unpack",
+            tabPack: "Pack to BrArchive",
+            unpackDropTitle: "Drag & drop .brarchive, .mcpack, or .mcaddon file here",
+            unpackDropSub: "or click to select a local file",
+            btnSelectFile: "Select File",
+            statFileName: "Archive Name",
+            statArchiveSize: "Archive Size",
+            statFileCount: "File Count",
+            statUncompressedSize: "Total Extracted",
+            phSearchFile: "Search filenames...",
+            btnDownloadZip: "Export as ZIP",
+            btnClear: "Clear",
+            thFileName: "File Path / Name",
+            thFileSize: "Size",
+            thActions: "Actions",
+            btnPreview: "Preview",
+            btnDownload: "Download",
+            packDropTitle: "Drag & drop files, folders, ZIP, mcpack, or mcaddon here",
+            packDropSub: "Supports multiple files, folder structures, or ZIP/mcpack/mcaddon archives",
+            btnAddFiles: "Add Files",
+            btnAddFolder: "Add Folder",
+            btnImportZip: "Import ZIP / MCPACK / MCADDON",
+            lblOutputName: "Output Filename",
+            btnClearList: "Clear List",
+            btnBuildPack: "Pack & Download",
+            lblTotalItems: "Files to Pack:",
+            lblEstSize: "Est. Total Size:",
+            warnLongName: "Includes paths >247 bytes (truncated if building .brarchive)",
+            thArcPath: "Archive Path (Edit directly)",
+            btnRemove: "Remove",
+            btnClose: "Close",
+            toastInvalidBrArchive: "Error: Failed to parse file (unsupported or corrupted)!",
+            toastUnpackSuccess: "Successfully unpacked {count} files!",
+            toastZipExporting: "Generating file, please wait...",
+            toastZipExportSuccess: "File created successfully!",
+            toastPackSuccess: "Successfully built package with {count} files!",
+            toastNoFilesToPack: "Warning: Please add files to pack first!",
+            toastZipImportSuccess: "Imported {count} files from archive!"
+        }
+    };
+
+    let currentLang = localStorage.getItem('brarchive_lang') || (navigator.language.startsWith('zh') ? 'zh' : 'en');
+
+    function setLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('brarchive_lang', lang);
+        document.getElementById('currentLangLabel').textContent = lang === 'zh' ? '中文' : 'English';
+
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            item.classList.toggle('active', (lang === 'zh' && item.textContent.includes('中文')) || (lang === 'en' && item.textContent.includes('English')));
+        });
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (I18N[lang] && I18N[lang][key]) {
+                el.textContent = I18N[lang][key];
+            }
+        });
+
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (I18N[lang] && I18N[lang][key]) {
+                el.placeholder = I18N[lang][key];
+            }
+        });
+
+        renderUnpackTable();
+        renderPackTable();
+    }
+
+    function t(key, vars = {}) {
+        let str = (I18N[currentLang] && I18N[currentLang][key]) || key;
+        for (const [k, v] of Object.entries(vars)) {
+            str = str.replace(`{${k}}`, v);
+        }
+        return str;
+    }
+
+    function showToast(message, type = 'info') {
+        const toastEl = document.getElementById('appToast');
+        const msgEl = document.getElementById('toastMessage');
+        const icon = type === 'error' ? 'bi-exclamation-triangle-fill text-danger' :
+            type === 'success' ? 'bi-check-circle-fill text-success' : 'bi-info-circle text-info';
+
+        msgEl.innerHTML = `<i class="bi ${icon} fs-5"></i> <span>${message}</span>`;
+        const toast = new bootstrap.Toast(toastEl, {delay: 4000});
+        toast.show();
+    }
+
+    function formatBytes(bytes, decimals = 2) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
+
+
+    // =========================================================================
+    // BRARCHIVE BINARY CORE ENGINE
+    // =========================================================================
+    const BRARCHIVE_MAGIC = [0x7d, 0x27, 0x25, 0xb1, 0xa0, 0x52, 0x70, 0x26];
+
+    function readBrArchive(buffer) {
+        const view = new DataView(buffer);
+        if (buffer.byteLength < 16) {
+            throw new Error("Invalid brarchive: file size too small");
+        }
+
+        const magic = new Uint8Array(buffer, 0, 8);
+        for (let i = 0; i < 8; i++) {
+            if (magic[i] !== BRARCHIVE_MAGIC[i]) {
+                throw new Error("Invalid brarchive: magic mismatch");
+            }
+        }
+
+        const count = view.getUint32(8, true);
+        const entries = [];
+        let pos = 16;
+
+        for (let i = 0; i < count; i++) {
+            if (pos + 256 > buffer.byteLength) {
+                throw new Error("Invalid brarchive: header unexpected EOF");
+            }
+
+            const nameLen = view.getUint8(pos);
+            const nameBytes = new Uint8Array(buffer, pos + 1, nameLen);
+            const name = new TextDecoder("utf-8").decode(nameBytes);
+
+            const offset = view.getUint32(pos + 248, true);
+            const length = view.getUint32(pos + 252, true);
+
+            entries.push({name, offset, length});
+            pos += 256;
+        }
+
+        const dataStart = 16 + count * 256;
+
+        for (const e of entries) {
+            if (dataStart + e.offset + e.length > buffer.byteLength) {
+                throw new Error(`Invalid brarchive: file data slice out of bounds for entry ${e.name}`);
+            }
+            e.content = new Uint8Array(buffer, dataStart + e.offset, e.length);
+        }
+
+        return entries;
+    }
+
+    function writeBrArchive(files) {
+        const encoder = new TextEncoder();
+        const count = files.length;
+
+        let totalDataLength = 0;
+        const fileDataList = files.map(file => {
+            const path = file.name.replace(/\\/g, '/');
+            const nameBytes = encoder.encode(path);
+            const truncatedBytes = nameBytes.length > 247 ? nameBytes.subarray(0, 247) : nameBytes;
+            totalDataLength += file.content.length;
+            return {
+                nameBytes: truncatedBytes,
+                content: file.content
+            };
+        });
+
+        const headerSize = 16 + count * 256;
+        const totalSize = headerSize + totalDataLength;
+        const buffer = new ArrayBuffer(totalSize);
+        const view = new DataView(buffer);
+        const u8 = new Uint8Array(buffer);
+
+        u8.set(BRARCHIVE_MAGIC, 0);
+        view.setUint32(8, count, true);
+        view.setUint32(12, 1, true);
+
+        let entryPos = 16;
+        let dataPos = 0;
+        const dataStart = headerSize;
+
+        for (const f of fileDataList) {
+            view.setUint8(entryPos, f.nameBytes.length);
+            u8.set(f.nameBytes, entryPos + 1);
+            view.setUint32(entryPos + 248, dataPos, true);
+            view.setUint32(entryPos + 252, f.content.length, true);
+            u8.set(f.content, dataStart + dataPos);
+
+            dataPos += f.content.length;
+            entryPos += 256;
+        }
+
+        return buffer;
+    }
+
+
+    // =========================================================================
+    // UNPACK MANAGER (.brarchive, .mcpack, .mcaddon, .zip)
+    // =========================================================================
+    let unpackedArchive = {
+        name: '',
+        size: 0,
+        entries: []
+    };
+
+    const unpackDropzone = document.getElementById('unpackDropzone');
+    const unpackFileInput = document.getElementById('unpackFileInput');
+    const unpackSearchInput = document.getElementById('unpackSearchInput');
+
+    unpackDropzone.addEventListener('click', (e) => {
+        if (e.target !== unpackFileInput && !e.target.closest('button')) {
+            unpackFileInput.click();
+        }
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        unpackDropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            unpackDropzone.classList.add('dragover');
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        unpackDropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            unpackDropzone.classList.remove('dragover');
+        });
+    });
+
+    unpackDropzone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            handleUnpackFile(files[0]);
+        }
+    });
+
+    unpackFileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleUnpackFile(e.target.files[0]);
+        }
+    });
+
+    unpackSearchInput.addEventListener('input', () => {
+        renderUnpackTable();
+    });
+
+    function handleUnpackFile(file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            try {
+                const buffer = e.target.result;
+                const u8 = new Uint8Array(buffer);
+
+                // Check if file is BrArchive format
+                let isBrArchive = false;
+                if (buffer.byteLength >= 8) {
+                    isBrArchive = BRARCHIVE_MAGIC.every((b, idx) => u8[idx] === b);
+                }
+
+                if (isBrArchive) {
+                    const entries = readBrArchive(buffer);
+                    unpackedArchive = {
+                        name: file.name,
+                        size: file.size,
+                        entries: entries
+                    };
+                    finishUnpack(file.name, file.size, entries);
+                } else {
+                    // Try loading as ZIP / MCPACK / MCADDON
+                    JSZip.loadAsync(buffer).then(async (zip) => {
+                        const entries = [];
+                        const promises = [];
+                        zip.forEach((relativePath, zipEntry) => {
+                            if (!zipEntry.dir) {
+                                const p = zipEntry.async("uint8array").then(content => {
+                                    entries.push({
+                                        name: relativePath,
+                                        offset: 0,
+                                        length: content.length,
+                                        content: content
+                                    });
+                                });
+                                promises.push(p);
+                            }
+                        });
+                        await Promise.all(promises);
+                        unpackedArchive = {
+                            name: file.name,
+                            size: file.size,
+                            entries: entries
+                        };
+                        finishUnpack(file.name, file.size, entries);
+                    }).catch(err => {
+                        console.error(err);
+                        showToast(t('toastInvalidBrArchive'), 'error');
+                    });
+                }
+            } catch (err) {
+                console.error(err);
+                showToast(t('toastInvalidBrArchive'), 'error');
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    function finishUnpack(name, size, entries) {
+        document.getElementById('statArchiveName').textContent = name;
+        document.getElementById('statArchiveSize').textContent = formatBytes(size);
+        document.getElementById('statFileCount').textContent = entries.length;
+        const totalUncompressed = entries.reduce((acc, cur) => acc + cur.length, 0);
+        document.getElementById('statUncompressedSize').textContent = formatBytes(totalUncompressed);
+
+        document.getElementById('unpackStats').classList.remove('d-none');
+        document.getElementById('unpackControls').classList.remove('d-none');
+
+        renderUnpackTable();
+        showToast(t('toastUnpackSuccess', {count: entries.length}), 'success');
+    }
+
+    function renderUnpackTable() {
+        const tbody = document.getElementById('unpackTableBody');
+        tbody.innerHTML = '';
+
+        if (!unpackedArchive.entries || unpackedArchive.entries.length === 0) return;
+
+        const query = unpackSearchInput.value.trim().toLowerCase();
+
+        unpackedArchive.entries.forEach((entry, index) => {
+            if (query && !entry.name.toLowerCase().includes(query)) {
+                return;
+            }
+
+            const ext = entry.name.includes('.') ? entry.name.split('.').pop().toLowerCase() : '';
+            const tr = document.createElement('tr');
+
+            tr.innerHTML = `
+          <td class="font-monospace text-secondary small">${index + 1}</td>
+          <td class="cell-path">
+            <div class="d-flex align-items-center gap-1 gap-sm-2">
+              <i class="bi ${getFileIcon(ext)} text-info flex-shrink-0"></i>
+              <span class="file-path-text text-light font-monospace">${escapeHtml(entry.name)}</span>
+              ${ext ? `<span class="badge bg-secondary badge-extension flex-shrink-0 ms-1 d-none d-sm-inline-block">${ext}</span>` : ''}
+            </div>
+          </td>
+          <td class="font-monospace small text-nowrap">${formatBytes(entry.length)}</td>
+          <td class="text-end text-nowrap">
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-info btn-xs px-2" onclick="previewFile(${index})" title="${t('btnPreview')}">
+                <i class="bi bi-eye"></i> <span class="d-none d-sm-inline">${t('btnPreview')}</span>
+              </button>
+              <button class="btn btn-outline-light btn-xs px-2" onclick="downloadSingleFile(${index})" title="${t('btnDownload')}">
+                <i class="bi bi-download"></i> <span class="d-none d-sm-inline">${t('btnDownload')}</span>
+              </button>
+            </div>
+          </td>
+        `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function downloadSingleFile(index) {
+        const entry = unpackedArchive.entries[index];
+        if (!entry) return;
+
+        const blob = new Blob([entry.content], {type: 'application/octet-stream'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const filename = entry.name.split('/').pop() || 'extracted_file';
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function downloadAllAsZip() {
+        if (!unpackedArchive.entries || unpackedArchive.entries.length === 0) return;
+
+        showToast(t('toastZipExporting'), 'info');
+        const zip = new JSZip();
+
+        unpackedArchive.entries.forEach(entry => {
+            zip.file(entry.name, entry.content);
+        });
+
+        zip.generateAsync({type: "blob"}).then(function (content) {
+            const zipName = unpackedArchive.name.replace(/\.(brarchive|mcpack|mcaddon)$/i, '') + '.zip';
+            const url = URL.createObjectURL(content);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = zipName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast(t('toastZipExportSuccess'), 'success');
+        });
+    }
+
+    function resetUnpack() {
+        unpackedArchive = {name: '', size: 0, entries: []};
+        document.getElementById('unpackFileInput').value = '';
+        document.getElementById('unpackSearchInput').value = '';
+        document.getElementById('unpackStats').classList.add('d-none');
+        document.getElementById('unpackControls').classList.add('d-none');
+        document.getElementById('unpackTableBody').innerHTML = '';
+    }
+
+
+    // =========================================================================
+    // PACK MANAGER
+    // =========================================================================
+    let packFileList = [];
+
+    const packDropzone = document.getElementById('packDropzone');
+    const packFilesInput = document.getElementById('packFilesInput');
+    const packFolderInput = document.getElementById('packFolderInput');
+    const packZipInput = document.getElementById('packZipInput');
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        packDropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            packDropzone.classList.add('dragover');
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        packDropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            packDropzone.classList.remove('dragover');
+        });
+    });
+
+    packDropzone.addEventListener('drop', (e) => {
+        const items = e.dataTransfer.items;
+        if (items && items.length > 0) {
+            handleDroppedItems(items);
+        } else if (e.dataTransfer.files.length > 0) {
+            addFilesToList(Array.from(e.dataTransfer.files));
+        }
+    });
+
+    packFilesInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            addFilesToList(Array.from(e.target.files));
+            packFilesInput.value = '';
+        }
+    });
+
+    packFolderInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            addFilesToList(Array.from(e.target.files));
+            packFolderInput.value = '';
+        }
+    });
+
+    packZipInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleZipImport(e.target.files[0]);
+            packZipInput.value = '';
+        }
+    });
+
+    async function handleDroppedItems(items) {
+        const files = [];
+        const queue = [];
+
+        for (let i = 0; i < items.length; i++) {
+            const entry = items[i].webkitGetAsEntry ? items[i].webkitGetAsEntry() : null;
+            if (entry) {
+                queue.push(traverseFileTree(entry));
+            }
+        }
+
+        await Promise.all(queue);
+        updatePackUI();
+
+        async function traverseFileTree(item, path = '') {
+            if (item.isFile) {
+                await new Promise((resolve) => {
+                    item.file(async (file) => {
+                        const ext = file.name.split('.').pop().toLowerCase();
+                        if (['zip', 'mcpack', 'mcaddon'].includes(ext)) {
+                            handleZipImport(file);
+                        } else {
+                            const arrayBuffer = await file.arrayBuffer();
+                            const fullPath = path + file.name;
+                            packFileList.push({
+                                id: Math.random().toString(36).substring(2, 9),
+                                name: fullPath,
+                                size: file.size,
+                                content: new Uint8Array(arrayBuffer)
+                            });
+                        }
+                        resolve();
+                    });
+                });
+            } else if (item.isDirectory) {
+                const dirReader = item.createReader();
+                const entries = await new Promise((resolve) => {
+                    dirReader.readEntries((entries) => resolve(entries));
+                });
+                for (let i = 0; i < entries.length; i++) {
+                    await traverseFileTree(entries[i], path + item.name + '/');
+                }
+            }
+        }
+    }
+
+    async function addFilesToList(fileList) {
+        for (const file of fileList) {
+            const relativePath = file.webkitRelativePath || file.name;
+            const arrayBuffer = await file.arrayBuffer();
+            packFileList.push({
+                id: Math.random().toString(36).substring(2, 9),
+                name: relativePath,
+                size: file.size,
+                content: new Uint8Array(arrayBuffer)
+            });
+        }
+        updatePackUI();
+    }
+
+    function handleZipImport(file) {
+        JSZip.loadAsync(file).then(async (zip) => {
+            let importedCount = 0;
+            const promises = [];
+
+            zip.forEach((relativePath, zipEntry) => {
+                if (!zipEntry.dir) {
+                    const p = zipEntry.async("uint8array").then((content) => {
+                        packFileList.push({
+                            id: Math.random().toString(36).substring(2, 9),
+                            name: relativePath,
+                            size: content.length,
+                            content: content
+                        });
+                        importedCount++;
+                    });
+                    promises.push(p);
+                }
+            });
+
+            await Promise.all(promises);
+            updatePackUI();
+            showToast(t('toastZipImportSuccess', {count: importedCount}), 'success');
+        }).catch(err => {
+            console.error(err);
+            showToast("ZIP / MCPACK Error: " + err.message, 'error');
+        });
+    }
+
+    function updatePackUI() {
+        if (packFileList.length > 0) {
+            document.getElementById('packControls').classList.remove('d-none');
+        } else {
+            document.getElementById('packControls').classList.add('d-none');
+        }
+
+        document.getElementById('packItemCount').textContent = packFileList.length;
+        const totalSize = packFileList.reduce((acc, cur) => acc + cur.size, 0);
+        document.getElementById('packTotalSize').textContent = formatBytes(totalSize);
+
+        const encoder = new TextEncoder();
+        const hasLongName = packFileList.some(f => encoder.encode(f.name).length > 247);
+        document.getElementById('packWarningBadge').classList.toggle('d-none', !hasLongName);
+
+        renderPackTable();
+    }
+
+    function renderPackTable() {
+        const tbody = document.getElementById('packTableBody');
+        tbody.innerHTML = '';
+
+        packFileList.forEach((item, index) => {
+            const ext = item.name.includes('.') ? item.name.split('.').pop().toLowerCase() : '';
+            const tr = document.createElement('tr');
+
+            tr.innerHTML = `
+          <td class="font-monospace text-secondary small">${index + 1}</td>
+          <td class="cell-path">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-dark border-secondary text-info"><i class="bi ${getFileIcon(ext)}"></i></span>
+              <input type="text" class="form-control form-control-sm search-input font-monospace text-break" 
+                     value="${escapeHtml(item.name)}" 
+                     onchange="updatePackPath('${item.id}', this.value)">
+            </div>
+          </td>
+          <td class="font-monospace small text-nowrap">${formatBytes(item.size)}</td>
+          <td class="text-end text-nowrap">
+            <button class="btn btn-outline-danger btn-sm px-2" onclick="removePackItem('${item.id}')" title="${t('btnRemove')}">
+              <i class="bi bi-x-lg"></i> <span class="d-none d-sm-inline">${t('btnRemove')}</span>
+            </button>
+          </td>
+        `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function updatePackPath(id, newPath) {
+        const item = packFileList.find(f => f.id === id);
+        if (item) {
+            item.name = newPath.trim();
+            updatePackUI();
+        }
+    }
+
+    function removePackItem(id) {
+        packFileList = packFileList.filter(f => f.id !== id);
+        updatePackUI();
+    }
+
+    function clearPackList() {
+        packFileList = [];
+        updatePackUI();
+    }
+
+    function buildAndDownloadBrArchive() {
+        if (packFileList.length === 0) {
+            showToast(t('toastNoFilesToPack'), 'error');
+            return;
+        }
+
+        let outputName = document.getElementById('packOutputName').value.trim() || 'archive.brarchive';
+        const lowerName = outputName.toLowerCase();
+
+        if (lowerName.endsWith('.mcpack') || lowerName.endsWith('.mcaddon') || lowerName.endsWith('.zip')) {
+            // Build as ZIP / MCPACK / MCADDON
+            showToast(t('toastZipExporting'), 'info');
+            const zip = new JSZip();
+            packFileList.forEach(file => {
+                zip.file(file.name.replace(/\\/g, '/'), file.content);
+            });
+
+            zip.generateAsync({type: "blob"}).then(function (content) {
+                const url = URL.createObjectURL(content);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = outputName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast(t('toastPackSuccess', {count: packFileList.length}), 'success');
+            });
+        } else {
+            // Build as .brarchive
+            try {
+                if (!lowerName.endsWith('.brarchive')) {
+                    outputName += '.brarchive';
+                }
+                const buffer = writeBrArchive(packFileList);
+                const blob = new Blob([buffer], {type: 'application/octet-stream'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = outputName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                showToast(t('toastPackSuccess', {count: packFileList.length}), 'success');
+            } catch (err) {
+                console.error(err);
+                showToast("Pack Error: " + err.message, 'error');
+            }
+        }
+    }
+
+
+    // =========================================================================
+    // PREVIEW MODAL LOGIC
+    // =========================================================================
+    function previewFile(index) {
+        const entry = unpackedArchive.entries[index];
+        if (!entry) return;
+
+        const titleEl = document.getElementById('previewModalTitle');
+        const bodyEl = document.getElementById('previewModalBody');
+        const infoEl = document.getElementById('previewModalInfo');
+
+        titleEl.textContent = entry.name;
+        infoEl.textContent = `${formatBytes(entry.length)}`;
+
+        const ext = entry.name.includes('.') ? entry.name.split('.').pop().toLowerCase() : '';
+        const imageExts = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp', 'tga'];
+        const textExts = ['json', 'txt', 'lang', 'properties', 'mcstructure', 'js', 'html', 'css', 'py', 'md', 'xml', 'yaml', 'yml'];
+
+        bodyEl.innerHTML = '';
+
+        if (imageExts.includes(ext)) {
+            const blob = new Blob([entry.content]);
+            const url = URL.createObjectURL(blob);
+            const img = document.createElement('img');
+            img.src = url;
+            img.className = 'img-fluid rounded border border-secondary';
+            img.style.maxHeight = '400px';
+            img.onload = () => URL.revokeObjectURL(url);
+            bodyEl.appendChild(img);
+        } else if (textExts.includes(ext) || isLikelyText(entry.content)) {
+            const text = new TextDecoder('utf-8').decode(entry.content);
+            const pre = document.createElement('pre');
+            pre.className = 'code-preview text-start mb-0';
+
+            if (ext === 'json' || text.trim().startsWith('{') || text.trim().startsWith('[')) {
+                try {
+                    const parsed = JSON.parse(text);
+                    pre.textContent = JSON.stringify(parsed, null, 2);
+                } catch (e) {
+                    pre.textContent = text;
+                }
+            } else {
+                pre.textContent = text;
+            }
+            bodyEl.appendChild(pre);
+        } else {
+            const pre = document.createElement('pre');
+            pre.className = 'code-preview hex-dump text-start mb-0';
+            pre.textContent = renderHexDump(entry.content.subarray(0, 2048));
+            bodyEl.appendChild(pre);
+        }
+
+        const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+        previewModal.show();
+    }
+
+    function isLikelyText(uint8Array) {
+        const len = Math.min(uint8Array.length, 512);
+        let printable = 0;
+        for (let i = 0; i < len; i++) {
+            const c = uint8Array[i];
+            if ((c >= 32 && c <= 126) || c === 9 || c === 10 || c === 13) {
+                printable++;
+            }
+        }
+        return (printable / len) > 0.85;
+    }
+
+    function renderHexDump(buffer) {
+        let output = '';
+        const len = buffer.length;
+        for (let i = 0; i < len; i += 16) {
+            const addr = i.toString(16).padStart(8, '0');
+            let hex = '';
+            let ascii = '';
+            for (let j = 0; j < 16; j++) {
+                if (i + j < len) {
+                    const b = buffer[i + j];
+                    hex += b.toString(16).padStart(2, '0') + ' ';
+                    ascii += (b >= 32 && b <= 126) ? String.fromCharCode(b) : '.';
+                } else {
+                    hex += '   ';
+                }
+            }
+            output += `${addr}  ${hex} |${ascii}|\n`;
+        }
+        return output;
+    }
+
+    function getFileIcon(ext) {
+        switch (ext) {
+            case 'png':
+            case 'jpg':
+            case 'jpeg':
+            case 'tga':
+            case 'webp':
+                return 'bi-file-earmark-image';
+            case 'json':
+            case 'mcstructure':
+                return 'bi-file-earmark-code';
+            case 'lang':
+            case 'txt':
+            case 'properties':
+                return 'bi-file-earmark-text';
+            case 'js':
+            case 'ts':
+            case 'py':
+                return 'bi-file-earmark-binary';
+            case 'mcpack':
+            case 'mcaddon':
+            case 'zip':
+                return 'bi-file-earmark-zip';
+            default:
+                return 'bi-file-earmark';
+        }
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        setLanguage(currentLang);
+    });
+</script>
+</body>
+
+</html>
