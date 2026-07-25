@@ -378,7 +378,7 @@
                             data-i18n="btnSelectFile">选择文件</span>
                     </button>
                     <input accept=".brarchive,.mcpack,.mcaddon,.zip" class="d-none" id="unpackFileInput"
-                           type="file">
+                           multiple type="file">
                 </div>
 
                 <!-- Unpack Summary Statistics -->
@@ -497,7 +497,7 @@
                     <input class="d-none" id="packFilesInput" multiple type="file">
                     <input class="d-none" directory id="packFolderInput" multiple type="file"
                            webkitdirectory>
-                    <input accept=".zip,.mcpack,.mcaddon" class="d-none" id="packZipInput" type="file">
+                    <input accept=".zip,.mcpack,.mcaddon,.brarchive" class="d-none" id="packZipInput" type="file">
                 </div>
 
                 <!-- Pack Controls & Options -->
@@ -769,17 +769,32 @@
 
 
     // =========================================================================
-    // BRARCHIVE BINARY CORE ENGINE
+    // BRARCHIVE BINARY CORE ENGINE & ARCHIVE PARSERS
     // =========================================================================
     const BRARCHIVE_MAGIC = [0x7d, 0x27, 0x25, 0xb1, 0xa0, 0x52, 0x70, 0x26];
 
-    function readBrArchive(buffer) {
-        const view = new DataView(buffer);
-        if (buffer.byteLength < 16) {
+    function isBrArchiveBuffer(u8) {
+        if (!u8 || u8.byteLength < 16) return false;
+        for (let i = 0; i < 8; i++) {
+            if (u8[i] !== BRARCHIVE_MAGIC[i]) return false;
+        }
+        return true;
+    }
+
+    function isZipBuffer(u8) {
+        if (!u8 || u8.byteLength < 4) return false;
+        return u8[0] === 0x50 && u8[1] === 0x4b && (u8[2] === 0x03 || u8[2] === 0x05 || u8[2] === 0x07);
+    }
+
+    function readBrArchive(bufferOrU8) {
+        const u8 = bufferOrU8 instanceof Uint8Array ? bufferOrU8 : new Uint8Array(bufferOrU8);
+        const rawBuffer = u8.buffer.slice(u8.byteOffset, u8.byteOffset + u8.byteLength);
+        const view = new DataView(rawBuffer);
+        if (rawBuffer.byteLength < 16) {
             throw new Error("Invalid brarchive: file size too small");
         }
 
-        const magic = new Uint8Array(buffer, 0, 8);
+        const magic = new Uint8Array(rawBuffer, 0, 8);
         for (let i = 0; i < 8; i++) {
             if (magic[i] !== BRARCHIVE_MAGIC[i]) {
                 throw new Error("Invalid brarchive: magic mismatch");
@@ -791,12 +806,12 @@
         let pos = 16;
 
         for (let i = 0; i < count; i++) {
-            if (pos + 256 > buffer.byteLength) {
+            if (pos + 256 > rawBuffer.byteLength) {
                 throw new Error("Invalid brarchive: header unexpected EOF");
             }
 
             const nameLen = view.getUint8(pos);
-            const nameBytes = new Uint8Array(buffer, pos + 1, nameLen);
+            const nameBytes = new Uint8Array(rawBuffer, pos + 1, nameLen);
             const name = new TextDecoder("utf-8").decode(nameBytes);
 
             const offset = view.getUint32(pos + 248, true);
@@ -809,13 +824,114 @@
         const dataStart = 16 + count * 256;
 
         for (const e of entries) {
-            if (dataStart + e.offset + e.length > buffer.byteLength) {
+            if (dataStart + e.offset + e.length > rawBuffer.byteLength) {
                 throw new Error(`Invalid brarchive: file data slice out of bounds for entry ${e.name}`);
             }
-            e.content = new Uint8Array(buffer, dataStart + e.offset, e.length);
+            e.content = new Uint8Array(rawBuffer, dataStart + e.offset, e.length);
         }
 
         return entries;
+    }
+
+    async function parseArchiveEntries(bufferOrU8) {
+        const u8 = bufferOrU8 instanceof Uint8Array ? bufferOrU8 : new Uint8Array(bufferOrU8);
+        const rawBuffer = u8.buffer.slice(u8.byteOffset, u8.byteOffset + u8.byteLength);
+
+        if (isBrArchiveBuffer(u8)) {
+            return readBrArchive(rawBuffer);
+        }
+
+        if (isZipBuffer(u8)) {
+            const zip = await JSZip.loadAsync(rawBuffer);
+            const entries = [];
+            const promises = [];
+            zip.forEach((relativePath, zipEntry) => {
+                if (!zipEntry.dir) {
+                    const p = zipEntry.async("uint8array").then(content => {
+                        entries.push({
+                            name: relativePath,
+                            offset: 0,
+                            length: content.length,
+                            content: content
+                        });
+                    });
+                    promises.push(p);
+                }
+            });
+            await Promise.all(promises);
+            return entries;
+        }
+
+        try {
+            const zip = await JSZip.loadAsync(rawBuffer);
+            const entries = [];
+            const promises = [];
+            zip.forEach((relativePath, zipEntry) => {
+                if (!zipEntry.dir) {
+                    const p = zipEntry.async("uint8array").then(content => {
+                        entries.push({
+                            name: relativePath,
+                            offset: 0,
+                            length: content.length,
+                            content: content
+                        });
+                    });
+                    promises.push(p);
+                }
+            });
+            await Promise.all(promises);
+            if (entries.length > 0) return entries;
+        } catch (e) {
+            // Not a zip archive
+        }
+
+        return null;
+    }
+
+    function stripArchiveExt(path) {
+        if (!path) return path;
+        return path.replace(/\.(brarchive|mcpack|mcaddon|zip)$/i, '');
+    }
+
+    async function recursivelyUnpackEntries(entries, depth = 0) {
+        if (depth > 10) return entries;
+
+        const result = [];
+        for (const entry of entries) {
+            const ext = entry.name.includes('.') ? entry.name.split('.').pop().toLowerCase() : '';
+            const archiveExts = ['brarchive', 'zip', 'mcpack', 'mcaddon'];
+            const isArchiveExt = archiveExts.includes(ext);
+            const u8 = entry.content;
+
+            let subEntries = null;
+            if (isArchiveExt || isBrArchiveBuffer(u8) || isZipBuffer(u8)) {
+                try {
+                    subEntries = await parseArchiveEntries(u8);
+                } catch (err) {
+                    console.warn(`Failed to unpack nested archive ${entry.name}:`, err);
+                    subEntries = null;
+                }
+            }
+
+            if (subEntries && subEntries.length > 0) {
+                const expandedChildren = await recursivelyUnpackEntries(subEntries, depth + 1);
+                const parentFolder = stripArchiveExt(entry.name);
+                for (const child of expandedChildren) {
+                    result.push({
+                        name: `${parentFolder}/${child.name}`,
+                        offset: 0,
+                        length: child.content.length,
+                        content: child.content
+                    });
+                }
+            } else {
+                result.push({
+                    ...entry,
+                    name: stripArchiveExt(entry.name)
+                });
+            }
+        }
+        return result;
     }
 
     function writeBrArchive(files) {
@@ -896,16 +1012,19 @@
         });
     });
 
-    unpackDropzone.addEventListener('drop', (e) => {
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            handleUnpackFile(files[0]);
+    unpackDropzone.addEventListener('drop', async (e) => {
+        const items = e.dataTransfer.items;
+        if (items && items.length > 0) {
+            await handleUnpackDroppedItems(items);
+        } else if (e.dataTransfer.files.length > 0) {
+            await handleUnpackFiles(Array.from(e.dataTransfer.files));
         }
     });
 
-    unpackFileInput.addEventListener('change', (e) => {
+    unpackFileInput.addEventListener('change', async (e) => {
         if (e.target.files.length > 0) {
-            handleUnpackFile(e.target.files[0]);
+            await handleUnpackFiles(Array.from(e.target.files));
+            unpackFileInput.value = '';
         }
     });
 
@@ -913,63 +1032,106 @@
         renderUnpackTable();
     });
 
-    function handleUnpackFile(file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            try {
-                const buffer = e.target.result;
-                const u8 = new Uint8Array(buffer);
+    async function handleUnpackDroppedItems(items) {
+        const fileObjects = [];
+        const queue = [];
 
-                // Check if file is BrArchive format
-                let isBrArchive = false;
-                if (buffer.byteLength >= 8) {
-                    isBrArchive = BRARCHIVE_MAGIC.every((b, idx) => u8[idx] === b);
-                }
-
-                if (isBrArchive) {
-                    const entries = readBrArchive(buffer);
-                    unpackedArchive = {
-                        name: file.name,
-                        size: file.size,
-                        entries: entries
-                    };
-                    finishUnpack(file.name, file.size, entries);
-                } else {
-                    // Try loading as ZIP / MCPACK / MCADDON
-                    JSZip.loadAsync(buffer).then(async (zip) => {
-                        const entries = [];
-                        const promises = [];
-                        zip.forEach((relativePath, zipEntry) => {
-                            if (!zipEntry.dir) {
-                                const p = zipEntry.async("uint8array").then(content => {
-                                    entries.push({
-                                        name: relativePath,
-                                        offset: 0,
-                                        length: content.length,
-                                        content: content
-                                    });
-                                });
-                                promises.push(p);
-                            }
-                        });
-                        await Promise.all(promises);
-                        unpackedArchive = {
-                            name: file.name,
+        async function traverseFileTree(item, path = '') {
+            if (item.isFile) {
+                await new Promise((resolve) => {
+                    item.file(async (file) => {
+                        const arrayBuffer = await file.arrayBuffer();
+                        const fullPath = path + file.name;
+                        fileObjects.push({
+                            name: fullPath,
                             size: file.size,
-                            entries: entries
-                        };
-                        finishUnpack(file.name, file.size, entries);
-                    }).catch(err => {
-                        console.error(err);
-                        showToast(t('toastInvalidBrArchive'), 'error');
+                            arrayBuffer: () => Promise.resolve(arrayBuffer)
+                        });
+                        resolve();
+                    });
+                });
+            } else if (item.isDirectory) {
+                const dirReader = item.createReader();
+                const entries = await new Promise((resolve) => {
+                    dirReader.readEntries((entries) => resolve(entries));
+                });
+                for (let i = 0; i < entries.length; i++) {
+                    await traverseFileTree(entries[i], path + item.name + '/');
+                }
+            }
+        }
+
+        for (let i = 0; i < items.length; i++) {
+            const entry = items[i].webkitGetAsEntry ? items[i].webkitGetAsEntry() : null;
+            if (entry) {
+                queue.push(traverseFileTree(entry));
+            }
+        }
+
+        await Promise.all(queue);
+        if (fileObjects.length > 0) {
+            await handleUnpackFiles(fileObjects);
+        }
+    }
+
+    async function handleUnpackFiles(fileList) {
+        if (!fileList || fileList.length === 0) return;
+
+        showToast(t('toastZipExporting'), 'info');
+
+        try {
+            let allEntries = [];
+            let totalSize = 0;
+            let archiveNames = [];
+
+            for (const file of fileList) {
+                totalSize += file.size;
+                archiveNames.push(file.name);
+                const arrayBuffer = typeof file.arrayBuffer === 'function' ? await file.arrayBuffer() : file.arrayBuffer;
+                const u8 = new Uint8Array(arrayBuffer);
+
+                let topEntries = await parseArchiveEntries(u8);
+                if (topEntries && topEntries.length > 0) {
+                    const expanded = await recursivelyUnpackEntries(topEntries, 0);
+                    if (fileList.length > 1) {
+                        const cleanFileName = stripArchiveExt(file.name);
+                        expanded.forEach(e => {
+                            allEntries.push({
+                                name: `${cleanFileName}/${e.name}`,
+                                offset: e.offset,
+                                length: e.length,
+                                content: e.content
+                            });
+                        });
+                    } else {
+                        allEntries = allEntries.concat(expanded);
+                    }
+                } else {
+                    allEntries.push({
+                        name: stripArchiveExt(file.name),
+                        offset: 0,
+                        length: file.size,
+                        content: u8
                     });
                 }
-            } catch (err) {
-                console.error(err);
-                showToast(t('toastInvalidBrArchive'), 'error');
             }
-        };
-        reader.readAsArrayBuffer(file);
+
+            if (allEntries.length === 0) {
+                showToast(t('toastInvalidBrArchive'), 'error');
+                return;
+            }
+
+            const displayName = archiveNames.length === 1 ? stripArchiveExt(archiveNames[0]) : `${archiveNames.length} 个文件`;
+            unpackedArchive = {
+                name: displayName,
+                size: totalSize,
+                entries: allEntries
+            };
+            finishUnpack(displayName, totalSize, allEntries);
+        } catch (err) {
+            console.error(err);
+            showToast(t('toastInvalidBrArchive'), 'error');
+        }
     }
 
     function finishUnpack(name, size, entries) {
@@ -1035,7 +1197,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        const filename = entry.name.split('/').pop() || 'extracted_file';
+        const filename = stripArchiveExt(entry.name.split('/').pop() || 'extracted_file');
         a.download = filename;
         document.body.appendChild(a);
         a.click();
@@ -1124,37 +1286,113 @@
         }
     });
 
-    packZipInput.addEventListener('change', (e) => {
+    packZipInput.addEventListener('change', async (e) => {
         if (e.target.files.length > 0) {
-            handleZipImport(e.target.files[0]);
+            await handleArchiveImportForPack(e.target.files[0]);
             packZipInput.value = '';
         }
     });
 
+    function stripCommonRootFolder(files) {
+        if (!files || files.length === 0) return files;
+        const firstPath = files[0].name.replace(/\\/g, '/');
+        if (!firstPath.includes('/')) return files;
+        const rootFolder = firstPath.split('/')[0] + '/';
+        const allShareRoot = files.every(f => f.name.replace(/\\/g, '/').startsWith(rootFolder));
+        if (allShareRoot) {
+            return files.map(f => ({
+                ...f,
+                name: f.name.replace(/\\/g, '/').substring(rootFolder.length)
+            }));
+        }
+        return files;
+    }
+
+    async function handleArchiveImportForPack(file) {
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const u8 = new Uint8Array(arrayBuffer);
+
+            let topEntries = await parseArchiveEntries(u8);
+            if (!topEntries || topEntries.length === 0) {
+                showToast("错误: 无法解析该压缩包!", "error");
+                return;
+            }
+
+            let expanded = await recursivelyUnpackEntries(topEntries, 0);
+            expanded = stripCommonRootFolder(expanded);
+
+            expanded.forEach(entry => {
+                packFileList.push({
+                    id: Math.random().toString(36).substring(2, 9),
+                    name: entry.name,
+                    size: entry.content.length,
+                    content: entry.content
+                });
+            });
+
+            const baseName = stripArchiveExt(file.name);
+            if (baseName) {
+                document.getElementById('packOutputName').value = baseName + '.zip';
+            }
+
+            updatePackUI();
+            showToast(t('toastZipImportSuccess', {count: expanded.length}), 'success');
+        } catch (err) {
+            console.error(err);
+            showToast("压缩包导入错误: " + err.message, 'error');
+        }
+    }
+
     async function handleDroppedItems(items) {
-        const files = [];
         const queue = [];
+        let rootName = '';
 
         for (let i = 0; i < items.length; i++) {
             const entry = items[i].webkitGetAsEntry ? items[i].webkitGetAsEntry() : null;
             if (entry) {
-                queue.push(traverseFileTree(entry));
+                if (i === 0) rootName = entry.name;
+                if (entry.isDirectory) {
+                    queue.push(traverseDirContents(entry, ''));
+                } else if (entry.isFile) {
+                    queue.push(traverseFileTree(entry, ''));
+                }
             }
         }
 
         await Promise.all(queue);
+
+        if (rootName) {
+            const baseName = stripArchiveExt(rootName);
+            if (baseName) {
+                document.getElementById('packOutputName').value = baseName + '.zip';
+            }
+        }
+
         updatePackUI();
+
+        async function traverseDirContents(dirEntry, path = '') {
+            const dirReader = dirEntry.createReader();
+            const entries = await new Promise((resolve) => {
+                dirReader.readEntries((entries) => resolve(entries));
+            });
+            for (let i = 0; i < entries.length; i++) {
+                await traverseFileTree(entries[i], path);
+            }
+        }
 
         async function traverseFileTree(item, path = '') {
             if (item.isFile) {
                 await new Promise((resolve) => {
                     item.file(async (file) => {
-                        const ext = file.name.split('.').pop().toLowerCase();
-                        if (['zip', 'mcpack', 'mcaddon'].includes(ext)) {
-                            handleZipImport(file);
+                        const ext = file.name.includes('.') ? file.name.split('.').pop().toLowerCase() : '';
+                        const archiveExts = ['zip', 'mcpack', 'mcaddon', 'brarchive'];
+
+                        if (archiveExts.includes(ext)) {
+                            await handleArchiveImportForPack(file);
                         } else {
                             const arrayBuffer = await file.arrayBuffer();
-                            const fullPath = path + file.name;
+                            const fullPath = path ? path + '/' + file.name : file.name;
                             packFileList.push({
                                 id: Math.random().toString(36).substring(2, 9),
                                 name: fullPath,
@@ -1170,16 +1408,40 @@
                 const entries = await new Promise((resolve) => {
                     dirReader.readEntries((entries) => resolve(entries));
                 });
+                const dirPath = path ? path + '/' + item.name : item.name;
                 for (let i = 0; i < entries.length; i++) {
-                    await traverseFileTree(entries[i], path + item.name + '/');
+                    await traverseFileTree(entries[i], dirPath);
                 }
             }
         }
     }
 
     async function addFilesToList(fileList) {
+        let hasWebkitPath = fileList.some(f => f.webkitRelativePath);
+        let commonPrefix = '';
+        if (hasWebkitPath && fileList.length > 0) {
+            const firstRel = fileList[0].webkitRelativePath;
+            if (firstRel.includes('/')) {
+                commonPrefix = firstRel.split('/')[0] + '/';
+                const allShare = fileList.every(f => f.webkitRelativePath.startsWith(commonPrefix));
+                if (!allShare) commonPrefix = '';
+            }
+        }
+
         for (const file of fileList) {
-            const relativePath = file.webkitRelativePath || file.name;
+            let relativePath = file.webkitRelativePath || file.name;
+            if (commonPrefix && relativePath.startsWith(commonPrefix)) {
+                relativePath = relativePath.substring(commonPrefix.length);
+            }
+
+            const ext = file.name.includes('.') ? file.name.split('.').pop().toLowerCase() : '';
+            const archiveExts = ['zip', 'mcpack', 'mcaddon', 'brarchive'];
+
+            if (archiveExts.includes(ext)) {
+                await handleArchiveImportForPack(file);
+                continue;
+            }
+
             const arrayBuffer = await file.arrayBuffer();
             packFileList.push({
                 id: Math.random().toString(36).substring(2, 9),
@@ -1188,36 +1450,20 @@
                 content: new Uint8Array(arrayBuffer)
             });
         }
+
+        if (fileList.length > 0) {
+            const firstFile = fileList[0];
+            let nameToUse = firstFile.name;
+            if (firstFile.webkitRelativePath) {
+                nameToUse = firstFile.webkitRelativePath.split('/')[0];
+            }
+            const baseName = stripArchiveExt(nameToUse);
+            if (baseName) {
+                document.getElementById('packOutputName').value = baseName + '.zip';
+            }
+        }
+
         updatePackUI();
-    }
-
-    function handleZipImport(file) {
-        JSZip.loadAsync(file).then(async (zip) => {
-            let importedCount = 0;
-            const promises = [];
-
-            zip.forEach((relativePath, zipEntry) => {
-                if (!zipEntry.dir) {
-                    const p = zipEntry.async("uint8array").then((content) => {
-                        packFileList.push({
-                            id: Math.random().toString(36).substring(2, 9),
-                            name: relativePath,
-                            size: content.length,
-                            content: content
-                        });
-                        importedCount++;
-                    });
-                    promises.push(p);
-                }
-            });
-
-            await Promise.all(promises);
-            updatePackUI();
-            showToast(t('toastZipImportSuccess', {count: importedCount}), 'success');
-        }).catch(err => {
-            console.error(err);
-            showToast("ZIP / MCPACK Error: " + err.message, 'error');
-        });
     }
 
     function updatePackUI() {
@@ -1291,40 +1537,81 @@
             return;
         }
 
-        let outputName = document.getElementById('packOutputName').value.trim() || 'archive.brarchive';
+        let outputName = document.getElementById('packOutputName').value.trim() || 'archive.zip';
         const lowerName = outputName.toLowerCase();
+        const hasFolders = packFileList.some(f => f.name.replace(/\\/g, '/').includes('/'));
 
-        if (lowerName.endsWith('.mcpack') || lowerName.endsWith('.mcaddon') || lowerName.endsWith('.zip')) {
-            // Build as ZIP / MCPACK / MCADDON
+        if (lowerName.endsWith('.zip') || lowerName.endsWith('.mcpack') || lowerName.endsWith('.mcaddon') || hasFolders) {
+            // Build ZIP: inner folders -> .brarchive, root files -> kept untouched outside
             showToast(t('toastZipExporting'), 'info');
             const zip = new JSZip();
+
+            const folderGroups = {};
+            const rootFiles = [];
+
             packFileList.forEach(file => {
-                zip.file(file.name.replace(/\\/g, '/'), file.content);
+                const path = file.name.replace(/\\/g, '/');
+                if (path.includes('/')) {
+                    const parts = path.split('/');
+                    const folderName = parts[0];
+                    const innerPath = parts.slice(1).join('/');
+                    if (innerPath) {
+                        if (!folderGroups[folderName]) {
+                            folderGroups[folderName] = [];
+                        }
+                        folderGroups[folderName].push({
+                            name: innerPath,
+                            content: file.content
+                        });
+                    }
+                } else {
+                    rootFiles.push(file);
+                }
             });
+
+            // Pack each top-level folder into its own .brarchive
+            for (const [folderName, files] of Object.entries(folderGroups)) {
+                const brBuffer = writeBrArchive(files);
+                zip.file(`${folderName}.brarchive`, brBuffer);
+            }
+
+            // Root files stay untouched outside
+            rootFiles.forEach(file => {
+                zip.file(file.name, file.content);
+            });
+
+            let finalDownloadName = outputName;
+            if (!/\.(zip|mcpack|mcaddon)$/i.test(finalDownloadName)) {
+                finalDownloadName = stripArchiveExt(finalDownloadName) + '.zip';
+            }
 
             zip.generateAsync({type: "blob"}).then(function (content) {
                 const url = URL.createObjectURL(content);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = outputName;
+                a.download = finalDownloadName;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 showToast(t('toastPackSuccess', {count: packFileList.length}), 'success');
+            }).catch(err => {
+                console.error(err);
+                showToast("Pack Error: " + err.message, 'error');
             });
         } else {
-            // Build as .brarchive
+            // Build single .brarchive file
             try {
-                if (!lowerName.endsWith('.brarchive')) {
-                    outputName += '.brarchive';
+                let finalDownloadName = outputName;
+                if (!finalDownloadName.toLowerCase().endsWith('.brarchive')) {
+                    finalDownloadName = stripArchiveExt(finalDownloadName) + '.brarchive';
                 }
                 const buffer = writeBrArchive(packFileList);
                 const blob = new Blob([buffer], {type: 'application/octet-stream'});
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = outputName;
+                a.download = finalDownloadName;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
