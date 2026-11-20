@@ -252,86 +252,98 @@
         <div class="card">
             <h5 class="card-header">附加装饰</h5>
             <div class="card-body">
-                <div class="input-group mb-3">
-                    <label class="col-form-label me-1 flex-shrink-0" for="coat">外套：</label>
-                    <select class="form-select" id="coat">
-                        <option selected value="">无</option>
-                        <option value="Vanilla">原版</option>
-                        <option value="VanillaAll">原版套装</option>
-                        <option value="15years">15周年</option>
-                        <option value="ProgressPride">进步骄傲</option>
-                        <option value="ProgressPride">进步骄傲套装</option>
-                        <option value="TikTok">Tik Tok</option>
-                        <option value="Twitch">Twitch</option>
-                        <option value="LtwitchAll">Twitch套装</option>
-                        <option value="MCC">MCC</option>
-                        <option value="Villager">村民</option>
-                        <option value="halfVillager">半尸</option>
-                        <option value="Eyeblossom">眼眸花</option>
-                        <option value="EyeblossomSweater">眼眸花毛衣</option>
-                        <option value="Home">Home</option>
-                        <option value="HomeNone">Home无图案</option>
-                        <option value="Menace">Menace</option>
-                        <option value="MenaceNone">Menace无图案</option>
-                        <option value="Yearn">Yearn</option>
-                        <option value="Common">普通上衣</option>
-                        <option value="CommonClothing">普通服装</option>
-                        <option value="2019">创始人</option>
-                        <option value="2019All">创始人套装</option>
-                        <option value="Pan">薄煎饼</option>
-                        <option value="PanAll">薄煎饼套装</option>
-                        <option value="Copper">铜</option>
-                        <option value="CopperAll">铜套装</option>
-                        <option value="ZombieHorseAll">僵尸马套装</option>
-                        <option value="ZombieHorse">僵尸马</option>
-                        <option value="ZombieHorseSweater">僵尸马毛衣</option>
-                        <option value="Moonlight">Moonlight</option>
-                        <option value="MoonlightPajamas">Moonlight睡衣</option>
-                        <option value="Crafter">工匠</option>
-                        <option value="CrafterLong">工匠长款</option>
-                        <option value="CrafterWool">工匠羊毛衫</option>
-                        <option value="Hero">英雄</option>
-                        <option value="HeroAll">英雄套装</option>
-                        <option value="Twisted">扭曲</option>
-                        <option value="TwistedAll">扭曲套装</option>
-                        <option value="Aurora">极光</option>
-                        <option value="AuroraAll">极光套装</option>
-                        <option value="Snow_Golem">雪人</option>
-                        <option value="Snow_GolemAll">雪人套装</option>
-                        <option value="Snow_GolemWool">雪人-羊毛套</option>
-                        <option value="Snow_GolemHat">雪人-帽子</option>
-                    </select>
+                <div class="row row-cols-2 row-cols-lg-4 g-3">
+                    <div class="col">
+                        <label class="form-label" for="coat">外套</label>
+                        <select class="form-select" id="coat" data-decoration="coat">
+                            <option selected value="">无</option>
+                            <option value="Vanilla">原版</option>
+                            <option value="15years">15周年</option>
+                            <option value="ProgressPride">进步骄傲</option>
+                            <option value="TikTok">Tik Tok</option>
+                            <option value="Twitch">Twitch</option>
+                            <option value="MCC">MCC</option>
+                            <option value="Villager">村民</option>
+                            <option value="halfVillager">半尸</option>
+                            <option value="Eyeblossom">眼眸花</option>
+                            <option value="Home">Home</option>
+                            <option value="HomeNone">Home无图案</option>
+                            <option value="Menace">Menace</option>
+                            <option value="MenaceNone">Menace无图案</option>
+                            <option value="Yearn">Yearn</option>
+                            <option value="Common">普通上衣</option>
+                            <option value="2019">创始人</option>
+                            <option value="Pan">薄煎饼</option>
+                            <option value="Copper">铜</option>
+                            <option value="ZombieHorse">僵尸马</option>
+                            <option value="Moonlight">Moonlight</option>
+                            <option value="Crafter">工匠</option>
+                            <option value="CrafterLong">工匠长款</option>
+                            <option value="Hero">英雄</option>
+                            <option value="Twisted">扭曲</option>
+                            <option value="Aurora">极光</option>
+                            <option value="Snow_Golem">雪人</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label class="form-label" for="outfit">套装</label>
+                        <select class="form-select" id="outfit" data-decoration="coat">
+                            <option selected value="">无</option>
+                            <option value="VanillaAll">原版套装</option>
+                            <option value="ProgressPrideAll">进步骄傲套装</option>
+                            <option value="LtwitchAll">Twitch套装</option>
+                            <option value="EyeblossomSweater">眼眸花毛衣</option>
+                            <option value="CommonClothing">普通套装</option>
+                            <option value="2019All">创始人套装</option>
+                            <option value="PanAll">薄煎饼套装</option>
+                            <option value="CopperAll">铜套装</option>
+                            <option value="ZombieHorseAll">僵尸马套装</option>
+                            <option value="ZombieHorsesWeater">僵尸马毛衣</option>
+                            <option value="MoonlightPajamas">Moonlight睡衣</option>
+                            <option value="CrafterWool">工匠羊毛衫</option>
+                            <option value="HeroAll">英雄套装</option>
+                            <option value="TwistedAll">扭曲套装</option>
+                            <option value="AuroraAll">极光套装</option>
+                            <option value="Snow_GolemAll">雪人套装</option>
+                            <option value="Snow_GolemWool">雪人羊毛套</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label class="form-label" for="shawl">披肩</label>
+                        <select class="form-select" id="shawl" data-decoration="shawl">
+                            <option selected value="">无</option>
+                            <option value="Vanilla">原版</option>
+                            <option value="15years">15周年</option>
+                            <option value="ProgressPride">进步骄傲</option>
+                            <option value="TikTok">Tik Tok</option>
+                            <option value="Twitch">Twitch</option>
+                            <option value="MCC">MCC</option>
+                            <option value="Villager">村民</option>
+                            <option value="Eyeblossom">眼眸花</option>
+                            <option value="Home">Home</option>
+                            <option value="Menace">Menace</option>
+                            <option value="Yearn">Yearn</option>
+                            <option value="Common">普通</option>
+                            <option value="2019">创始人</option>
+                            <option value="Pan">薄煎饼</option>
+                            <option value="Copper">铜</option>
+                            <option value="ZombieHorse">僵尸马</option>
+                            <option value="Moonlight">Moonlight</option>
+                            <option value="Crafter">工匠</option>
+                            <option value="Hero">英雄</option>
+                            <option value="Twisted">扭曲</option>
+                            <option value="Aurora">极光</option>
+                            <option value="Snow_Golem">雪人</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label class="form-label" for="hat">帽子</label>
+                        <select class="form-select" id="hat" data-decoration="coat">
+                            <option selected value="">无</option>
+                            <option value="Snow_GolemHat">雪人帽子</option>
+                        </select>
+                    </div>
                 </div>
-
-                <div class="input-group mb-3">
-                    <label class="col-form-label me-1 flex-shrink-0" for="shawl">披肩：</label>
-                    <select class="form-select" id="shawl">
-                        <option selected value="">无</option>
-                        <option value="Vanilla">原版</option>
-                        <option value="15years">15周年</option>
-                        <option value="ProgressPride">进步骄傲</option>
-                        <option value="TikTok">Tik Tok</option>
-                        <option value="Twitch">Twitch</option>
-                        <option value="MCC">MCC</option>
-                        <option value="Villager">村民</option>
-                        <option value="Eyeblossom">眼眸花</option>
-                        <option value="Home">Home</option>
-                        <option value="Menace">Menace</option>
-                        <option value="Yearn">Yearn</option>
-                        <option value="Common">普通</option>
-                        <option value="2019">创始人</option>
-                        <option value="Pan">薄煎饼</option>
-                        <option value="Copper">铜</option>
-                        <option value="ZombieHorse">僵尸马</option>
-                        <option value="Moonlight">Moonlight</option>
-                        <option value="Crafter">工匠</option>
-                        <option value="Hero">英雄</option>
-                        <option value="Twisted">扭曲</option>
-                        <option value="Aurora">极光</option>
-                        <option value="Snow_Golem">雪人</option>
-                    </select>
-                </div>
-
             </div>
         </div>
 

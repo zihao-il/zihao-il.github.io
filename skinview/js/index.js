@@ -47,10 +47,12 @@ const downloadBlob = (url, filename) => {
     a.click();
 };
 
-/** 重置外套/披肩状态 */
-const initCoatShawl = () => {
-    $('#coat').val('');
-    $('#shawl').val('');
+const $decorationInputs = $('select[data-decoration]');
+let decorationRequest = 0;
+
+const resetDecorations = () => {
+    $decorationInputs.val('');
+    decorationRequest++;
     old_skin = "";
 };
 // 皮肤操作封装
@@ -59,7 +61,7 @@ const loadDefaultSkin = (name) => {
     skin_url = IMG_PATH.skin(name);
     skinViewer.loadSkin(skin_url, {});
     $("input[name='skin_model'][value='auto-detect']").prop("checked", true);
-    initCoatShawl();
+    resetDecorations();
 };
 
 /** 加载披风/鞘翅 */
@@ -102,7 +104,7 @@ $("#skin_upload").on("change", function () {
     skin_url = URL.createObjectURL(file);
     skinViewer.loadSkin(skin_url, {});
     $("input[name='skin_model'][value='auto-detect']").prop("checked", true);
-    initCoatShawl();
+    resetDecorations();
 });
 
 // 清除上传的皮肤
@@ -136,6 +138,7 @@ $("#skin_get_btn").on("click", function () {
                 showModalMessage(result.message);
                 return;
             }
+            resetDecorations();
             skinViewer.loadSkin(result.skin, {});
             if (result.cape) {
                 skinViewer.loadCape(result.cape, {});
@@ -232,9 +235,12 @@ $("#animation_speed_btn").on("click", function () {
 
 // 切换皮肤模型
 $("#skin_model").on("change", function () {
-    skinViewer.loadSkin(skin_url, {
-        model: $(this).val()
-    });
+    const $selected = $decorationInputs.filter(function () { return this.value !== ''; });
+    if ($selected.length) {
+        $selected.trigger('change');
+    } else if (!old_skin) {
+        skinViewer.loadSkin(skin_url, {model: this.value});
+    }
 });
 
 // 皮肤层功能
@@ -290,48 +296,39 @@ const loadSkinToCanvas = async (src) => {
     return {canvas, ctx};
 };
 
-/** 添加外套/披肩装饰并合并到当前皮肤 */
-const AddDecoration = async (name, cs) => {
-    if (old_skin === "") {
-        old_skin = skin_url;
+// 附加装饰共用原始皮肤，切换时不叠加上一件装饰。
+$decorationInputs.on('change', async function () {
+    const name = this.value;
+    const request = ++decorationRequest;
+    const model = getCurrentModel();
+    if (name) $decorationInputs.not(this).val('');
+    if (!old_skin && !name) return;
+    const base = old_skin ||= skin_url;
+
+    try {
+        if (!name) {
+            const image = await loadImageAsync(base);
+            if (request !== decorationRequest) return;
+            skinViewer.loadSkin(image, {model: getCurrentModel()});
+            skin_url = base;
+            resetDecorations();
+            return;
+        }
+        const {canvas, ctx} = await loadSkinToCanvas(base);
+        const fit = model === 'auto-detect' ? (checkClassicSkin(ctx) ? 'default' : 'slim') : model;
+        const decoration = await loadImageAsync(IMG_PATH.decoration(name, this.dataset.decoration, fit));
+        if (request !== decorationRequest) return;
+        ctx.drawImage(decoration, 0, 0, canvas.width, canvas.height);
+        skinViewer.loadSkin(canvas, {model: fit});
+        skin_url = canvas.toDataURL();
+    } catch {
+        if (request !== decorationRequest) return;
+        if (name) {
+            this.value = '';
+            $(this).trigger('change');
+        }
+        showModalMessage('无法加载装饰预览');
     }
-
-    const {canvas, ctx} = await loadSkinToCanvas(old_skin);
-    const model = checkClassicSkin(ctx) ? "default" : "slim";
-
-    const decorationImg = await loadImageAsync(IMG_PATH.decoration(name, cs, model));
-    ctx.drawImage(decorationImg, 0, 0, canvas.width, canvas.height);
-
-    skin_url = canvas.toDataURL();
-    skinViewer.loadSkin(skin_url, {model});
-};
-
-/** 恢复原始皮肤并清空装饰状态 */
-const resetDecoration = () => {
-    skinViewer.loadSkin(old_skin, {model: getCurrentModel()});
-    skin_url = old_skin;
-    old_skin = "";
-};
-
-/** 处理外套/披肩互斥切换 */
-const handleDecorationChange = (value, cs, otherSelector) => {
-    if ($(otherSelector).val() !== "") {
-        $(otherSelector).val('');
-        resetDecoration();
-    }
-    if (value !== "") {
-        AddDecoration(value, cs);
-    } else {
-        resetDecoration();
-    }
-};
-
-$("#coat").on("change", function () {
-    handleDecorationChange($(this).val(), 'coat', '#shawl');
-});
-
-$("#shawl").on("change", function () {
-    handleDecorationChange($(this).val(), 'shawl', '#coat');
 });
 
 // 视图尺寸控制
@@ -598,76 +595,245 @@ $("#language").on("change", function () {
 
 
 // ==================== 皮肤包预览 ====================
-/** 渲染皮肤包中每个皮肤的 3D 预览 */
-const renderPackSkins = async (zip, skinsData) => {
-    const $modalBody = $("#mcpackModal .modal-body");
-    const modalBodyWidth = $modalBody.width() || 400;
+const parsePackLang = (text) => {
+    const labels = new Map();
+    for (const line of text.split(/\r?\n/)) {
+        const entry = line.replace(/\t+#.*$/, '').trim();
+        const equals = entry.indexOf('=');
+        if (entry.startsWith('#') || equals < 1) continue;
+        labels.set(entry.slice(0, equals).trim(), entry.slice(equals + 1).trim());
+    }
+    return labels;
+};
 
-    for (const [index, skin] of skinsData.skins.entries()) {
-        const skinFile = zip.file(skin.texture);
-        if (!skinFile) continue;
+const readPackLanguages = async (zip) => new Map(await Promise.all(
+    zip.file(/^texts\/[^/]+\.lang$/i).map(async (file) => [
+        file.name.slice(6, -5), parsePackLang(await file.async('string'))
+    ])
+));
 
-        const blob = await skinFile.async("blob");
-        const skinURL = URL.createObjectURL(blob);
-        const skinModel = skin.geometry === "geometry.humanoid.customSlim" ? "slim" : "default";
-        const canvasId = `skin_container_${index}`;
+const packFileName = (name, fallback) =>
+    name.replace(/[^\S ]|[<>:"/\\|?*\x00-\x1f]/g, '_').slice(0, 100).replace(/^[. ]+|[. ]+$/g, '') || fallback;
 
-        $modalBody.append(
-            `<div style="width: 85%;margin: 0 auto;"><p>${skin.localization_name}：</p><canvas id="${canvasId}"></canvas></div>`
-        );
-
-        new skinview3d.SkinViewer({
-            canvas: document.getElementById(canvasId),
-            width: modalBodyWidth * 0.85,
-            height: 250,
-            skin: skinURL,
-            enableControls: true,
-            model: skinModel
-        });
+const downloadPackBlob = (blob, filename) => {
+    const url = URL.createObjectURL(blob);
+    try {
+        downloadBlob(url, filename);
+    } finally {
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 };
 
-/** 重置皮肤包上传状态 */
-const resetPackInput = () => $("#mcpack_input").val("");
+const buildSkinTextureZip = async (entries) => {
+    const zip = new JSZip();
+    for (const {file, filename} of entries) {
+        zip.file(filename, await file.async('uint8array'));
+    }
+    return zip;
+};
 
-$("#mcpack_input").on("change", async function () {
+const renderPackSkins = ($modal, zip, manifest, data, languages) => {
+    const $body = $modal.find('.modal-body').html(`
+        <fieldset class="mb-3" data-pack-languages hidden>
+            <legend class="fs-6 mb-1">皮肤包语言</legend>
+            <div class="d-flex flex-wrap gap-3" data-pack-language-options></div>
+        </fieldset>
+        <div class="mb-3 text-center" data-pack-preview hidden>
+            <p class="mb-1 text-break" data-pack-preview-name translate="no"></p>
+            <canvas class="mx-auto mw-100" aria-label="皮肤 3D 预览" hidden></canvas>
+            <p class="mb-0 text-body-secondary" data-pack-preview-status role="status"></p>
+        </div>
+        <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
+            <label class="me-auto"><input class="form-check-input me-1" type="checkbox" data-pack-all>全选</label>
+            <button class="btn btn-outline-primary btn-sm" type="button" data-pack-download>下载所选 (0)</button>
+        </div>
+        <p class="text-body-secondary small mb-2" data-pack-status role="status"></p>
+        <ul class="list-group" data-pack-skins></ul>
+    `);
+    const $title = $modal.find('.modal-title').attr('translate', 'no');
+    const $status = $body.find('[data-pack-status]');
+    const $all = $body.find('[data-pack-all]');
+    const $download = $body.find('[data-pack-download]');
+    const $list = $body.find('[data-pack-skins]');
+    const $preview = $body.find('[data-pack-preview]');
+    const $previewName = $body.find('[data-pack-preview-name]');
+    const $previewStatus = $body.find('[data-pack-preview-status]');
+    const $canvas = $preview.find('canvas');
+    const packKey = data.localization_name || data.serialize_name || '';
+    const fallbackLanguage = languages.has('zh_CN') ? 'zh_CN' : languages.has('en_US') ? 'en_US' : languages.keys().next().value;
+    const fallbackLabels = languages.get(fallbackLanguage);
+    let labels = fallbackLabels;
+    let viewer;
+    let active;
+    let previewRequest = 0;
+    let downloading = false;
+
+    const translate = (key, fallback) => labels?.get(key) || fallbackLabels?.get(key) || fallback;
+    const packName = () => translate(`skinpack.${packKey}`, packKey || manifest.header?.name || '皮肤包');
+    const skinName = ({key, fallback}) => translate(key, fallback);
+    const textureName = (entry) => `${entry.index + 1}-${packFileName(skinName(entry), 'skin')}.png`;
+
+    const previewSkin = async (entry) => {
+        active?.$previewBtn.removeClass('active').attr('aria-pressed', 'false');
+        active = entry;
+        entry.$previewBtn.addClass('active').attr('aria-pressed', 'true');
+        const request = ++previewRequest;
+        $preview.prop('hidden', false);
+        $previewName.text(skinName(entry));
+        $previewStatus.text('正在加载预览…');
+        $canvas.prop('hidden', true);
+        let url;
+        try {
+            url = URL.createObjectURL(await entry.file.async('blob'));
+            if (request !== previewRequest) return;
+            const image = await loadImageAsync(url);
+            if (request !== previewRequest) return;
+            viewer ??= new skinview3d.SkinViewer({canvas: $canvas[0], height: 220, enableControls: true});
+            viewer.width = Math.min($preview.width(), 400);
+            viewer.loadSkin(image, {model: entry.model});
+            $canvas.prop('hidden', false);
+            $previewStatus.empty();
+        } catch {
+            if (request === previewRequest) $previewStatus.text('无法预览此贴图');
+        } finally {
+            if (url) URL.revokeObjectURL(url);
+        }
+    };
+
+    const entries = data.skins.map((skin, index) => {
+        const texture = typeof skin?.texture === 'string' ? skin.texture : '';
+        const name = typeof skin?.localization_name === 'string' ? skin.localization_name : '';
+        const file = /\.png$/i.test(texture) ? zip.file(texture) : null;
+        const entry = {
+            index, file, key: `skin.${packKey}.${name}`,
+            fallback: name || texture.split('/').pop() || `皮肤 ${index + 1}`,
+            model: skin?.geometry === 'geometry.humanoid.customSlim' ? 'slim'
+                : skin?.geometry === 'geometry.humanoid.custom' ? 'default' : 'auto-detect',
+            $name: $('<span class="text-break me-auto" translate="no"></span>'),
+            $check: $('<input class="form-check-input flex-shrink-0" type="checkbox">').prop('disabled', !file),
+            $previewBtn: $('<button class="btn btn-outline-secondary btn-sm" type="button" aria-pressed="false">预览</button>')
+                .on('click', () => previewSkin(entry))
+        };
+        const $row = $('<li class="list-group-item d-flex align-items-center flex-wrap gap-2"></li>')
+            .append(entry.$check, entry.$name).appendTo($list);
+        if (file) {
+            $row.append(entry.$previewBtn,
+                $('<button class="btn btn-outline-primary btn-sm" type="button">PNG</button>')
+                    .on('click', async function () {
+                        const filename = textureName(entry);
+                        this.disabled = true;
+                        $status.empty();
+                        try {
+                            downloadPackBlob(await file.async('blob'), filename);
+                        } catch {
+                            $status.text('无法下载此贴图');
+                        } finally {
+                            this.disabled = false;
+                        }
+                    }));
+        } else {
+            $row.append($('<span class="small text-body-secondary"></span>').text('缺少 PNG 贴图'));
+        }
+        return entry;
+    });
+
+    const updateNames = () => {
+        $title.text(packName());
+        for (const entry of entries) {
+            const name = skinName(entry);
+            entry.$name.text(name);
+            entry.$check.attr('aria-label', `选择 ${name}`);
+            entry.$previewBtn.attr('aria-label', `预览 ${name}`);
+            entry.$name.siblings('button').last().attr('aria-label', `下载 ${name} 的 PNG`);
+        }
+        if (active) $previewName.text(skinName(active));
+    };
+
+    const $options = $body.find('[data-pack-language-options]');
+    for (const [code, translations] of languages) {
+        const $radio = $('<input class="form-check-input me-1" name="pack_language" type="radio">')
+            .prop('checked', code === fallbackLanguage)
+            .on('change', function () {
+                if (!this.checked) return;
+                labels = translations;
+                updateNames();
+            });
+        $('<label translate="no"></label>').text(code).prepend($radio).appendTo($options);
+    }
+    $body.find('[data-pack-languages]').prop('hidden', !languages.size);
+    updateNames();
+
+    const available = entries.filter(({file}) => file);
+    const selected = () => available.filter(({ $check }) => $check.prop('checked'));
+    const updateSelection = () => {
+        const count = selected().length;
+        $all.prop('checked', count > 0 && count === available.length)
+            .prop('indeterminate', count > 0 && count < available.length);
+        $download.prop('disabled', downloading || !count).text(downloading ? '正在打包…' : `下载所选 (${count})`);
+    };
+    $all.prop('disabled', !available.length).on('change', function () {
+        available.forEach(({ $check }) => $check.prop('checked', this.checked));
+        updateSelection();
+    });
+    $list.on('change', 'input[type="checkbox"]', updateSelection);
+    $download.on('click', async () => {
+        const files = selected().map((entry) => ({file: entry.file, filename: textureName(entry)}));
+        if (!files.length || downloading) return;
+        const filename = `${packFileName(packName(), 'skin-pack')}-skins.zip`;
+        downloading = true;
+        updateSelection();
+        $status.empty();
+        try {
+            const archive = await buildSkinTextureZip(files);
+            downloadPackBlob(await archive.generateAsync({type: 'blob'}), filename);
+        } catch {
+            $status.text('打包下载失败');
+        } finally {
+            downloading = false;
+            updateSelection();
+        }
+    });
+    updateSelection();
+
+    if (available.length) $modal.one('shown.bs.modal', () => previewSkin(available[0]));
+    else $status.text(entries.length ? '此皮肤包没有可用的 PNG 贴图' : '此皮肤包没有皮肤');
+    $modal.one('hide.bs.modal', () => {
+        previewRequest++;
+        $modal.off('shown.bs.modal');
+        viewer?.dispose();
+    });
+};
+
+$('#mcpack_input').on('change', async function () {
     const file = this.files[0];
     if (!file) return;
 
+    const $input = $(this).prop('disabled', true);
+    const reset = () => $input.val('').prop('disabled', false);
+    const $modal = $('#mcpackModal');
+    $modal.find('.modal-dialog').addClass('modal-dialog-scrollable');
     try {
         const zip = await JSZip.loadAsync(file);
-
-        const manifestFile = zip.file("manifest.json");
-        if (!manifestFile) {
-            showModalMessage("请上传正确的mcpack文件");
+        const manifestFile = zip.file('manifest.json');
+        if (!manifestFile) throw new Error('缺少 manifest.json');
+        const manifest = JSON.parse(await manifestFile.async('string'));
+        if (!Array.isArray(manifest?.modules) || !manifest.modules.some((module) => module?.type === 'skin_pack')) {
+            showModalMessage('不是皮肤包类型文件');
+            reset();
             return;
         }
-        const manifestData = JSON.parse(await manifestFile.async("string"));
-        if (!manifestData.modules?.some((m) => m.type === "skin_pack")) {
-            showModalMessage("不是皮肤包类型文件");
-            return;
-        }
-
-        const skinsJsonFile = zip.file("skins.json");
-        if (!skinsJsonFile) {
-            showModalMessage("未找到 skins.json文件");
-            return;
-        }
-        const skinsData = JSON.parse(await skinsJsonFile.async("string"));
-
-        $("#mcpackModal .modal-title").text(skinsData.localization_name || "皮肤包");
-        $("#mcpackModal .modal-body").empty();
-        $('#mcpackModal').modal('show');
-
-        $('#mcpackModal')
-            .off('shown.bs.modal')
-            .one('shown.bs.modal', () => renderPackSkins(zip, skinsData));
-    } catch (err) {
-        showModalMessage("文件解析失败");
+        const skinsFile = zip.file('skins.json');
+        if (!skinsFile) throw new Error('缺少 skins.json');
+        const data = JSON.parse(await skinsFile.async('string'));
+        if (!Array.isArray(data?.skins)) throw new Error('无效的 skins.json');
+        renderPackSkins($modal, zip, manifest, data, await readPackLanguages(zip));
+        $input.prop('disabled', false);
+        $modal.one('hidden.bs.modal', () => {
+            $modal.find('.modal-body').empty();
+            reset();
+        }).modal('show');
+    } catch {
+        reset();
+        showModalMessage('无法读取皮肤包，请检查 .mcpack 文件是否完整');
     }
-
-    // 多语言单选切换,单个皮肤管理或者统一管理
 });
-
-$("#mcpackModalClose").on("click", resetPackInput);
-$('#mcpackModal').on('hide.bs.modal', resetPackInput);
