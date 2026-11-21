@@ -235,10 +235,9 @@ $("#animation_speed_btn").on("click", function () {
 
 // 切换皮肤模型
 $("#skin_model").on("change", function () {
-    const $selected = $decorationInputs.filter(function () { return this.value !== ''; });
-    if ($selected.length) {
-        $selected.trigger('change');
-    } else if (!old_skin) {
+    if (old_skin) {
+        refreshDecorations();
+    } else {
         skinViewer.loadSkin(skin_url, {model: this.value});
     }
 });
@@ -296,39 +295,54 @@ const loadSkinToCanvas = async (src) => {
     return {canvas, ctx};
 };
 
-// 附加装饰共用原始皮肤，切换时不叠加上一件装饰。
-$decorationInputs.on('change', async function () {
-    const name = this.value;
+// 每次从原始皮肤合成，帽子最后绘制。
+const refreshDecorations = async () => {
     const request = ++decorationRequest;
     const model = getCurrentModel();
-    if (name) $decorationInputs.not(this).val('');
-    if (!old_skin && !name) return;
+    const selected = $decorationInputs.get().filter(input => input.value);
+    if (!old_skin && !selected.length) return;
     const base = old_skin ||= skin_url;
 
     try {
-        if (!name) {
+        if (!selected.length) {
             const image = await loadImageAsync(base);
             if (request !== decorationRequest) return;
-            skinViewer.loadSkin(image, {model: getCurrentModel()});
+            skinViewer.loadSkin(image, {model});
             skin_url = base;
-            resetDecorations();
+            old_skin = '';
             return;
         }
         const {canvas, ctx} = await loadSkinToCanvas(base);
         const fit = model === 'auto-detect' ? (checkClassicSkin(ctx) ? 'default' : 'slim') : model;
-        const decoration = await loadImageAsync(IMG_PATH.decoration(name, this.dataset.decoration, fit));
         if (request !== decorationRequest) return;
-        ctx.drawImage(decoration, 0, 0, canvas.width, canvas.height);
-        skinViewer.loadSkin(canvas, {model: fit});
-        skin_url = canvas.toDataURL();
-    } catch {
+        const layers = await Promise.allSettled(selected.map(input =>
+            loadImageAsync(IMG_PATH.decoration(input.value, input.dataset.decoration, fit))
+        ));
         if (request !== decorationRequest) return;
-        if (name) {
-            this.value = '';
-            $(this).trigger('change');
+
+        let failed = false;
+        for (const [index, layer] of layers.entries()) {
+            if (layer.status === 'fulfilled') {
+                ctx.drawImage(layer.value, 0, 0, canvas.width, canvas.height);
+            } else {
+                selected[index].value = '';
+                failed = true;
+            }
         }
-        showModalMessage('无法加载装饰预览');
+        const hasDecoration = selected.some(input => input.value);
+        const texture = hasDecoration ? canvas.toDataURL() : base;
+        skinViewer.loadSkin(canvas, {model: fit});
+        skin_url = texture;
+        if (!hasDecoration) old_skin = '';
+        if (failed) showModalMessage('无法加载部分装饰贴图');
+    } catch {
+        if (request === decorationRequest) showModalMessage('无法加载装饰预览');
     }
+};
+
+$decorationInputs.on('change', function () {
+    if (this.id !== 'hat' && this.value) $decorationInputs.not('#hat').not(this).val('');
+    return refreshDecorations();
 });
 
 // 视图尺寸控制
